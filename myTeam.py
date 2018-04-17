@@ -276,6 +276,7 @@ class LuckyLuke(CaptureAgent):
     #enemies_within_sensor_range_position = [e for e in enemies if e.getPosition() != None]
     for enemy in self.enemy_indexes:
       self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
+      self.get_most_likely_distance_from_noisy_reading(enemy)
     self.update_enemy_possible_locations_depending_on_round(gameState)
 
 
@@ -348,6 +349,10 @@ class LuckyLuke(CaptureAgent):
 
   #def triangulation(self, distance):
 
+  # TODOOO
+  # IF we ever spot a certain agent we can reset his emission odds to pin point on that excat location
+  # add bias to how close the location is to our half since that would probably be more likely
+
   def updateNoisyDistanceProbabilities(self, mypos, enemy_we_are_checking, gameState):
     index = self.getEnemyListIndex(enemy_we_are_checking)
     distance_to_agents = gameState.getAgentDistances()
@@ -368,6 +373,11 @@ class LuckyLuke(CaptureAgent):
     #get most probable location maybe get a couple lets see how only picking the top dog works
     #mostProbableLocation = np.argmax(self.emission_probabilties_for_each_location_for_each_agent[index])
 
-  #def get_most_likely_distance_from_noisy_reading(self):
+  def get_most_likely_distance_from_noisy_reading(self, enemy):
+    index = self.getEnemyListIndex(enemy)
+    #just return the likliest location of some agent
+    listCopy = [i[1] for i in self.emission_probabilties_for_each_location_for_each_agent[index]]
+    max_index = np.argmax(listCopy)
+    return max_index
 
 
