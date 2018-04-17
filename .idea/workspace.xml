@@ -26,8 +26,8 @@
       <file leaf-file-name="myTeam.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/myTeam.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="541">
-              <caret line="385" column="0" lean-forward="true" selection-start-line="385" selection-start-column="0" selection-end-line="385" selection-end-column="0" />
+            <state relative-caret-position="23">
+              <caret line="72" column="36" lean-forward="true" selection-start-line="72" selection-start-column="36" selection-end-line="72" selection-end-column="36" />
               <folding>
                 <element signature="e#650#688#0" expanded="true" />
               </folding>
@@ -38,7 +38,7 @@
       <file leaf-file-name="distanceCalculator.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/distanceCalculator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1196">
+            <state relative-caret-position="541">
               <caret line="52" column="35" lean-forward="false" selection-start-line="52" selection-start-column="35" selection-end-line="52" selection-end-column="35" />
               <folding />
             </state>
@@ -58,8 +58,8 @@
       <file leaf-file-name="captureAgents.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/captureAgents.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6555">
-              <caret line="288" column="9" lean-forward="false" selection-start-line="288" selection-start-column="9" selection-end-line="288" selection-end-column="9" />
+            <state relative-caret-position="186">
+              <caret line="155" column="37" lean-forward="false" selection-start-line="155" selection-start-column="27" selection-end-line="155" selection-end-column="37" />
               <folding />
             </state>
           </provider>
@@ -68,7 +68,7 @@
       <file leaf-file-name="pacman.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pacman.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1472">
+            <state relative-caret-position="541">
               <caret line="71" column="20" lean-forward="false" selection-start-line="71" selection-start-column="20" selection-end-line="71" selection-end-column="20" />
               <folding />
             </state>
@@ -88,8 +88,8 @@
       <file leaf-file-name="capture.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/capture.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4669">
-              <caret line="214" column="9" lean-forward="false" selection-start-line="214" selection-start-column="9" selection-end-line="214" selection-end-column="9" />
+            <state relative-caret-position="23">
+              <caret line="205" column="7" lean-forward="true" selection-start-line="205" selection-start-column="7" selection-end-line="205" selection-end-column="7" />
               <folding />
             </state>
           </provider>
@@ -98,8 +98,8 @@
       <file leaf-file-name="game.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/game.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5566">
-              <caret line="246" column="26" lean-forward="false" selection-start-line="246" selection-start-column="26" selection-end-line="246" selection-end-column="26" />
+            <state relative-caret-position="186">
+              <caret line="622" column="98" lean-forward="false" selection-start-line="622" selection-start-column="98" selection-end-line="622" selection-end-column="98" />
               <folding />
             </state>
           </provider>
@@ -119,7 +119,6 @@
       <find>getPosition</find>
       <find>agentState</find>
       <find>getMazeDistance</find>
-      <find>GameState</find>
       <find>print</find>
       <find>kill</find>
       <find>checkDeath</find>
@@ -128,6 +127,11 @@
       <find>dic</find>
       <find>nearest</find>
       <find>CaptureA</find>
+      <find>AgentState</find>
+      <find>index</find>
+      <find>Opponents</find>
+      <find>enemy_indexes</find>
+      <find>GameState</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -230,12 +234,11 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.12447917" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32661718" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32661718" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -421,54 +424,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pacman.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1472">
-          <caret line="71" column="20" lean-forward="false" selection-start-line="71" selection-start-column="20" selection-end-line="71" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/captureAgents.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6555">
-          <caret line="288" column="9" lean-forward="false" selection-start-line="288" selection-start-column="9" selection-end-line="288" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/game.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5566">
-          <caret line="246" column="26" lean-forward="false" selection-start-line="246" selection-start-column="26" selection-end-line="246" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ghostAgents.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="184">
-          <caret line="8" column="58" lean-forward="false" selection-start-line="8" selection-start-column="58" selection-end-line="8" selection-end-column="58" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/distanceCalculator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1196">
-          <caret line="52" column="35" lean-forward="false" selection-start-line="52" selection-start-column="35" selection-end-line="52" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/capture.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4669">
-          <caret line="214" column="9" lean-forward="false" selection-start-line="214" selection-start-column="9" selection-end-line="214" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/util.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4876">
@@ -485,10 +440,58 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/myTeam.py">
+    <entry file="file://$PROJECT_DIR$/captureAgents.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="186">
+          <caret line="155" column="37" lean-forward="false" selection-start-line="155" selection-start-column="27" selection-end-line="155" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ghostAgents.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="8" column="58" lean-forward="false" selection-start-line="8" selection-start-column="58" selection-end-line="8" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pacman.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="541">
-          <caret line="385" column="0" lean-forward="true" selection-start-line="385" selection-start-column="0" selection-end-line="385" selection-end-column="0" />
+          <caret line="71" column="20" lean-forward="false" selection-start-line="71" selection-start-column="20" selection-end-line="71" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/distanceCalculator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="541">
+          <caret line="52" column="35" lean-forward="false" selection-start-line="52" selection-start-column="35" selection-end-line="52" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/game.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="186">
+          <caret line="622" column="98" lean-forward="false" selection-start-line="622" selection-start-column="98" selection-end-line="622" selection-end-column="98" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/capture.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="23">
+          <caret line="205" column="7" lean-forward="true" selection-start-line="205" selection-start-column="7" selection-end-line="205" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myTeam.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="23">
+          <caret line="72" column="36" lean-forward="true" selection-start-line="72" selection-start-column="36" selection-end-line="72" selection-end-column="36" />
           <folding>
             <element signature="e#650#688#0" expanded="true" />
           </folding>

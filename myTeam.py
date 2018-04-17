@@ -272,16 +272,25 @@ class LuckyLuke(CaptureAgent):
     else:
       features['distanceFromEachOther'] = 0
 
+    list_of_enemies_to_check_noisy_distance_for = [i for i in self.enemy_indexes if successor.getAgentState(i).getPosition() == None]
+    list_of_enemies_in_range = [i for i in self.enemy_indexes if i not in list_of_enemies_to_check_noisy_distance_for]
+
+    for i in list_of_enemies_in_range:
+      self.reset_agent_probabilties_when_we_know_the_true_position(i, list(successor.getAgentState(i).getPosition()))
+
+    #reset_agent_probabilties_when_we_know_the_true_position
 
     # need to add a check first to see if we have the true position of some of our agents
     list_of_most_probable_locations = []
     #enemies_within_sensor_range_position = [e for e in enemies if e.getPosition() != None]
-    for enemy in self.enemy_indexes:
+    for enemy in list_of_enemies_to_check_noisy_distance_for:
       self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
       list_of_most_probable_locations.append(self.get_most_likely_distance_from_noisy_reading(enemy))
     self.update_enemy_possible_locations_depending_on_round(gameState)
 
-    print(list_of_most_probable_locations)
+    #todo check this bjartur something fhishy somtiems it returns zero also add the bias for places closer to us that
+    # will get higher rating
+    #print(list_of_most_probable_locations)
 
     #if we dont get the true distance we turn to the most probable noisy distance using hmms n stuff
     #if gameState.getAgentDistances()
@@ -382,4 +391,8 @@ class LuckyLuke(CaptureAgent):
     max_index = np.argmax(listCopy)
     return max_index
 
-
+  def reset_agent_probabilties_when_we_know_the_true_position(self, enemy, true_position):
+      index = self.getEnemyListIndex(enemy)
+      listCopy = [i[0] for i in self.emission_probabilties_for_each_location_for_each_agent[index]]
+      location_index = listCopy.index(true_position)
+      self.emission_probabilties_for_each_location_for_each_agent[index][location_index][1] = 1.0
