@@ -273,13 +273,15 @@ class LuckyLuke(CaptureAgent):
       features['distanceFromEachOther'] = 0
 
 
+    # need to add a check first to see if we have the true position of some of our agents
+    list_of_most_probable_locations = []
     #enemies_within_sensor_range_position = [e for e in enemies if e.getPosition() != None]
     for enemy in self.enemy_indexes:
       self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
-      self.get_most_likely_distance_from_noisy_reading(enemy)
+      list_of_most_probable_locations.append(self.get_most_likely_distance_from_noisy_reading(enemy))
     self.update_enemy_possible_locations_depending_on_round(gameState)
 
-
+    print(list_of_most_probable_locations)
 
     #if we dont get the true distance we turn to the most probable noisy distance using hmms n stuff
     #if gameState.getAgentDistances()
