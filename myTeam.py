@@ -17,6 +17,8 @@ from capture import AgentRules
 import random, time, util
 from game import Directions
 from util import nearestPoint
+import numpy as np
+
 import game
 
 #################
@@ -86,12 +88,26 @@ class LuckyLuke(CaptureAgent):
     #scaredTimer #maybe if scared run into the nearest player if he is x close to reset or hide? i dont know which is better
     self.enemy_indexes = self.getOpponents(gameState)
     #dictionary function inside this pacman thingy
-    map = self.convert_tuples_to_list(self.grid_to_work_with)
+    self.map = self.convert_tuples_to_list(self.grid_to_work_with)
+
+    ## TODO ###
+    #Make this code somewhat more smarter and more intuitive but it gets the job done for now
     self.emission_probabilties_for_each_location_for_each_agent = []
     for enemy in self.enemy_indexes:
-      locations_odd_per_player = [enemy, map]
-      self.emission_probabilties_for_each_location_for_each_agent.append(locations_odd_per_player)
-    print(self.emission_probabilties_for_each_location_for_each_agent[0][1][0])
+      all_locations = self.map
+      all_locations_plus_odds = []
+      for location in all_locations:
+        element = [location, 0]
+        all_locations_plus_odds.append(element)
+      self.emission_probabilties_for_each_location_for_each_agent.append(all_locations_plus_odds)
+      # Because we know the inital position we can put the probabilty of the enemy being in that position to 100% i.e one
+      initPos = list(gameState.getInitialAgentPosition(enemy))
+      initPos = [initPos, 0]
+      agent_list_index = self.getEnemyListIndex(enemy)
+      starting_location_index = self.emission_probabilties_for_each_location_for_each_agent[agent_list_index].index(initPos)
+      self.emission_probabilties_for_each_location_for_each_agent[agent_list_index][starting_location_index][1] = 1.0
+
+    #print(self.emission_probabilties_for_each_location_for_each_agent[0][1][0])
     '''
     Your initialization code goes here, if you need any.
     '''
@@ -122,6 +138,7 @@ class LuckyLuke(CaptureAgent):
       #Then two to left etc etc
       return (0, 0) #got to figure this edge case out
     return location
+
   def chooseAction(self, gameState):
     '''
     You should change this in your own agent.
@@ -137,6 +154,10 @@ class LuckyLuke(CaptureAgent):
 
 
     actions = gameState.getLegalActions(self.index)
+    pos = gameState.getAgentState(self.index).getPosition()
+    #print(actions)
+    #print(actions_2)
+
     # You can profile your evaluation time by uncommenting these lines
     # start = time.time()
     values = [self.evaluate(gameState, a) for a in actions]
@@ -212,8 +233,7 @@ class LuckyLuke(CaptureAgent):
 
     # Computes distance to invaders we can see
     enemies = [successor.getAgentState(i) for i in self.getOpponents(successor)]
-    for enemy in self.enemy_indexes:
-      self.getMostProbableNoisyDistance(myPos, enemy, gameState)
+    #Now we update the noisy distances for those that arent within our sensor range
 
     #for action in actions:
     #successor =self.getSuccessor(gameState, action)
@@ -225,6 +245,12 @@ class LuckyLuke(CaptureAgent):
       #print(team_kill_c)
     #AgentRules.checkDeath(state, agentIndex)
     #heh = [d.checkDeath() for d in enemies]
+
+    #for e in enemies:
+     # print(e.getPosition())
+     # if e.getPosition() != None:
+     #   print(self.getMazeDistance(myPos, e.getPosition()))
+
     invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
     features['numInvaders'] = len(invaders)
     if len(invaders) > 0:
@@ -246,6 +272,17 @@ class LuckyLuke(CaptureAgent):
     else:
       features['distanceFromEachOther'] = 0
 
+
+    #enemies_within_sensor_range_position = [e for e in enemies if e.getPosition() != None]
+    for enemy in self.enemy_indexes:
+      self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
+    self.update_enemy_possible_locations_depending_on_round(gameState)
+
+
+
+    #if we dont get the true distance we turn to the most probable noisy distance using hmms n stuff
+    #if gameState.getAgentDistances()
+
     #Todo populate this feature with hmm observation data
     #features['noisyInvaderDistance'] = hmm(heh)
     #Extra features from baseLine that account for closeness to the middle of the field
@@ -264,14 +301,73 @@ class LuckyLuke(CaptureAgent):
       l.append(element)
     return l
 
-  def getMostProbableNoisyDistance(self, mypos, enemy_we_are_checking, gameState):
+  def getEnemyListIndex(self, enemy_we_are_checking):
+    max_element = max(self.enemy_indexes)
+    if enemy_we_are_checking == max_element:
+      index = 1
+    else:
+      index = 0
+    return index
+
+  ## Todo we know after each action our enemies could only have moved a single step in some possible action
+  def update_enemy_possible_locations_depending_on_round(self, gameState):
+    for enemy in self.enemy_indexes:
+      # all legal actions for the enemy depending on possible locations
+      list_index = self.getEnemyListIndex(enemy)
+      #    invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
+      all_locations_not_with_zero_probabilty = [i for i in self.emission_probabilties_for_each_location_for_each_agent[list_index] if i[1] != 0]
+      all_possible_moves = []
+      for i in all_locations_not_with_zero_probabilty:
+        posible_moves_from_i = self.get_legal_actions_from_location(i[0])
+        all_possible_moves.extend(posible_moves_from_i)
+      #Give all possible moves equal probability and then multiply those with odds
+      number_of_possible_locations_to_move_to = len(all_possible_moves)
+      for move in all_possible_moves:
+        #find index of possible moves
+        counter = 0
+        for i in self.emission_probabilties_for_each_location_for_each_agent[list_index]:
+          if i[0] == move:
+            i[1] = 1/number_of_possible_locations_to_move_to
+
+
+  def get_legal_actions_from_location(self, location):
+    location = list(location)
+    list_of_possible_coordinates = []
+    #always possible to stop in place
+    list_of_possible_coordinates.append(location)
+    #now check up, down, left, right,
+    up = [location[0], location[1]+1]
+    down = [location[0], location[1]-1]
+    left = [location[0]-1, location[1]]
+    right = [location[0]+1, location[1]]
+    candidates = [up, down, left, right]
+    for candidate in candidates:
+      if candidate in self.map:
+        list_of_possible_coordinates.append(candidate)
+    return list_of_possible_coordinates
+
+  #def triangulation(self, distance):
+
+  def updateNoisyDistanceProbabilities(self, mypos, enemy_we_are_checking, gameState):
+    index = self.getEnemyListIndex(enemy_we_are_checking)
     distance_to_agents = gameState.getAgentDistances()
     distance_to_enemy = distance_to_agents[enemy_we_are_checking]
+    counter = 0
     #Only check possible locations of the enemy in question
-    for g in self.grid_to_work_with:
-      trueDistance = util.manhattanDistance(mypos, g)
+    for i in self.emission_probabilties_for_each_location_for_each_agent[index]:
+      the_coordinates = tuple(i[0])
+      trueDistance = util.manhattanDistance(mypos, the_coordinates)
       emissionModel = gameState.getDistanceProb(trueDistance, distance_to_enemy)
+      updated_probabilties_for_each_location = i[1] * emissionModel
+      self.emission_probabilties_for_each_location_for_each_agent[index][counter][1] = updated_probabilties_for_each_location
+      counter += 1
       #todo add check for:
       #we know that if the actual distance is equal to 5 or less we always get it as a true reading
- #     print(emissionModel)
-    #keep track of previous probabilities
+      #Get previous location odds and multiply with this information
+      #keep track of previous probabilities
+    #get most probable location maybe get a couple lets see how only picking the top dog works
+    #mostProbableLocation = np.argmax(self.emission_probabilties_for_each_location_for_each_agent[index])
+
+  #def get_most_likely_distance_from_noisy_reading(self):
+
+
