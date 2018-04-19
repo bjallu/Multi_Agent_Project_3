@@ -15,8 +15,10 @@
 from captureAgents import CaptureAgent
 from capture import AgentRules
 import random, time, util
-from game import Directions
+from game import Directions, Grid
 from util import nearestPoint
+from captureGraphicsDisplay import PacmanGraphics
+#if isinstance(self.display, PacmanGraphics):
 import numpy as np
 
 import game
@@ -68,16 +70,34 @@ class LuckyLuke(CaptureAgent):
     IMPORTANT: This method may run for at most 15 seconds.
     """
 
+    #find if there is a pacman and this list has changed def getFoodYouAreDefending(self, gameState):
+
     '''
     Make sure you do not delete the following line. If you would like to
     use Manhattan distances instead of maze distances in order to save
     on initialization time, please take a look at
     CaptureAgent.registerInitialState in captureAgents.py.
     '''
+
     self.LayoutHalfWayPoint_Width = gameState.data.layout.width/2
     self.LayoutHalfWayPoint_Height = gameState.data.layout.height/2
+    CaptureAgent.display = PacmanGraphics
     CaptureAgent.registerInitialState(self, gameState)
-    self.grid_to_work_with = [g for g in gameState.getWalls().asList(False) if g[1] > 1]
+    grid_fiesta = []
+
+    grid = np.zeros((gameState.data.layout.width, gameState.data.layout.height))
+    for x in range(gameState.data.layout.width):
+      for y in range(gameState.data.layout.height):
+        if not gameState.hasWall(x, y):
+          grid[x][y] = 1
+          grid_fiesta.append((x, y))
+
+    self.grid_to_work_with = grid_fiesta
+    #self.grid_to_work_with = #Grid.asList()
+    #print(self.grid_to_work_with)
+
+    #self.debugDraw(self.grid_to_work_with,[1,0,0],True)
+
     self.middle = (self.LayoutHalfWayPoint_Width, self.LayoutHalfWayPoint_Height)
     self.middle = self.find_place_in_grid(gameState, self.middle)
     # try features for the upper and lower half so the agent not in the middle could settle on either one of those points
@@ -152,7 +172,12 @@ class LuckyLuke(CaptureAgent):
     #mby add some function if no one is attacking us
     # Check if the enemy has any pacman.
 
-
+    #TODOOO ADD DECAYING FACTOR / BIAS I:E FAVOUR POSITONS THAT ARE FURTHER AWAY FROM THEIR INITAL POSITON
+    # AND CLOSER TO OUR HALFWAY POINT
+    # find out if we can know that an enemy dies we set it to the starting point with 100% odds
+    #
+    #
+    #
     actions = gameState.getLegalActions(self.index)
     pos = gameState.getAgentState(self.index).getPosition()
     #print(actions)
@@ -187,12 +212,19 @@ class LuckyLuke(CaptureAgent):
       #print(enemy_kill_count)
       #print(team_kill_c)
 
+    #fuond some debuggining thing
+    ##  self.displayDistributionsOverPositions()
+    #debug draw
     return random.choice(bestActions)
 
   def getSuccessor(self, gameState, action):
     """
     Finds the next successor which is a grid position (location tuple).
     """
+
+
+    #FIX THIS TO WORK WITH ALL THE GRID
+
     successor = gameState.generateSuccessor(self.index, action)
     pos = successor.getAgentState(self.index).getPosition()
     if pos != nearestPoint(pos):
@@ -246,15 +278,17 @@ class LuckyLuke(CaptureAgent):
     #AgentRules.checkDeath(state, agentIndex)
     #heh = [d.checkDeath() for d in enemies]
 
-    #for e in enemies:
-     # print(e.getPosition())
-     # if e.getPosition() != None:
-     #   print(self.getMazeDistance(myPos, e.getPosition()))
+    #  IF A PELLET dissappears we know in legalmoves from that location
+    # that a pacman is there
+
+    #invaders_must_die = [a for a in enemies if a.isPacman]
+    #print(invaders_must_die)
 
     invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
     features['numInvaders'] = len(invaders)
     if len(invaders) > 0:
       dists = [self.getMazeDistance(myPos, a.getPosition()) for a in invaders]
+      #print(dists)
       features['invaderDistance'] = min(dists)
 
     if action == Directions.STOP: features['stop'] = 1
@@ -280,23 +314,48 @@ class LuckyLuke(CaptureAgent):
 
     #reset_agent_probabilties_when_we_know_the_true_position
 
+    #if the distance is small under 2 and then not next round he prolly died and we reset the probabilty and location
+
     # need to add a check first to see if we have the true position of some of our agents
     list_of_most_probable_locations = []
     #enemies_within_sensor_range_position = [e for e in enemies if e.getPosition() != None]
+
+    #### NEED TO FIGURE OUT JIUST TO CALL THIS ONCE PER TURN
     self.update_enemy_possible_locations_depending_on_round(gameState)
-    for enemy in list_of_enemies_to_check_noisy_distance_for:
+
+    for enemy in self.enemy_indexes:
       self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
       list_of_most_probable_locations.append(self.get_most_likely_distance_from_noisy_reading(enemy))
 
     #todo check this bjartur something fhishy somtiems it returns zero also add the bias for places closer to us that
     # will get higher rating
-    print(list_of_most_probable_locations)
+
+    #Now get the enemy distances
+    final_enemy_distances = []
+    for enemy in self.enemy_indexes:
+      if successor.getAgentState(enemy).getPosition() != None:
+        final_enemy_distances.append(successor.getAgentState(enemy).getPosition())
+      else:
+        index = self.getEnemyListIndex(enemy)
+        final_enemy_distances.append(list_of_most_probable_locations[index])
+
+    #self.debugDraw(final_enemy_distances,[1,0,0],False)
+
+    for enemy in self.enemy_indexes:
+      index = self.getEnemyListIndex(enemy)
+      list_to_print = [i for i in self.emission_probabilties_for_each_location_for_each_agent[index] if i[1] != 0]
+      ls = [tuple(i[0]) for i in list_to_print]
+      #print(ls)
+      #if index == 0:
+      #  self.debugDraw(ls,[1,0,0],True)
+      #else:
+       # self.debugDraw(ls, [0, 1, 0], True)
+    #self.debugDraw(final_enemy_distances,[1,0,0],False)
+
     distance_to_each_enemy_most_probable_location = [self.getMazeDistance(myPos, i) for i in list_of_most_probable_locations]
-    print(distance_to_each_enemy_most_probable_location)
     if len(distance_to_each_enemy_most_probable_location) != 0:
       features['noisyInvaderDistance'] = min(distance_to_each_enemy_most_probable_location)
     #if we dont get the true distance we turn to the most probable noisy distance using hmms n stuff
-    #if gameState.getAgentDistances()
     # Also possibilty to work with the scared timer of our agent
     # if otherAgentState.scaredTimer <= 0:
     return features
@@ -319,6 +378,10 @@ class LuckyLuke(CaptureAgent):
       index = 0
     return index
 
+  #if our enemy is a pacman we always know it true distance? to check
+
+  #noisyDistances = gameState.getAgentDistances()
+
   ## Todo we know after each action our enemies could only have moved a single step in some possible action
   def update_enemy_possible_locations_depending_on_round(self, gameState):
     for enemy in self.enemy_indexes:
@@ -338,7 +401,7 @@ class LuckyLuke(CaptureAgent):
         for i in self.emission_probabilties_for_each_location_for_each_agent[list_index]:
           if i[0] == move:
             i[1] = 1/number_of_possible_locations_to_move_to
-
+            #new_belief[newPos] += prob * self.beliefs[enemy][oldPos]
 
   def get_legal_actions_from_location(self, location):
     location = list(location)
@@ -351,8 +414,10 @@ class LuckyLuke(CaptureAgent):
     left = [location[0]-1, location[1]]
     right = [location[0]+1, location[1]]
     candidates = [up, down, left, right]
+   # self.debugDraw(candidates, [0, 0, 1], False)
     for candidate in candidates:
       if candidate in self.map:
+      #  self.debugDraw([candidate], [0, 0.5, 0.5], False)
         list_of_possible_coordinates.append(candidate)
     return list_of_possible_coordinates
 
@@ -373,6 +438,8 @@ class LuckyLuke(CaptureAgent):
       trueDistance = util.manhattanDistance(mypos, the_coordinates)
       emissionModel = gameState.getDistanceProb(trueDistance, distance_to_enemy)
       updated_probabilties_for_each_location = i[1] * emissionModel
+      #Todo maybe nromalize all odds after this loop so we arnt left with small numbers
+      #find some debugging mechianism
       self.emission_probabilties_for_each_location_for_each_agent[index][counter][1] = updated_probabilties_for_each_location
       counter += 1
       #todo add check for:
