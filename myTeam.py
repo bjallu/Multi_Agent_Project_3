@@ -283,22 +283,20 @@ class LuckyLuke(CaptureAgent):
     # need to add a check first to see if we have the true position of some of our agents
     list_of_most_probable_locations = []
     #enemies_within_sensor_range_position = [e for e in enemies if e.getPosition() != None]
+    self.update_enemy_possible_locations_depending_on_round(gameState)
     for enemy in list_of_enemies_to_check_noisy_distance_for:
       self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
       list_of_most_probable_locations.append(self.get_most_likely_distance_from_noisy_reading(enemy))
-    self.update_enemy_possible_locations_depending_on_round(gameState)
 
     #todo check this bjartur something fhishy somtiems it returns zero also add the bias for places closer to us that
     # will get higher rating
-    #print(list_of_most_probable_locations)
-
+    print(list_of_most_probable_locations)
+    distance_to_each_enemy_most_probable_location = [self.getMazeDistance(myPos, i) for i in list_of_most_probable_locations]
+    print(distance_to_each_enemy_most_probable_location)
+    if len(distance_to_each_enemy_most_probable_location) != 0:
+      features['noisyInvaderDistance'] = min(distance_to_each_enemy_most_probable_location)
     #if we dont get the true distance we turn to the most probable noisy distance using hmms n stuff
     #if gameState.getAgentDistances()
-
-    #Todo populate this feature with hmm observation data
-    #features['noisyInvaderDistance'] = hmm(heh)
-    #Extra features from baseLine that account for closeness to the middle of the field
-    #Which I think would help them to be able to stop our invaders sooner
     # Also possibilty to work with the scared timer of our agent
     # if otherAgentState.scaredTimer <= 0:
     return features
@@ -389,7 +387,8 @@ class LuckyLuke(CaptureAgent):
     #just return the likliest location of some agent
     listCopy = [i[1] for i in self.emission_probabilties_for_each_location_for_each_agent[index]]
     max_index = np.argmax(listCopy)
-    return max_index
+    return tuple(self.emission_probabilties_for_each_location_for_each_agent[index][max_index][0])
+    #return max_index
 
   def reset_agent_probabilties_when_we_know_the_true_position(self, enemy, true_position):
       index = self.getEnemyListIndex(enemy)
