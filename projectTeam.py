@@ -46,10 +46,12 @@ def createTeam(firstIndex, secondIndex, isRed,
 ##########
 
 class DecisionTree :
-  levels = 4
+  levels = 5
 
   def __init__(self,game_state,root_agent_object):
-      self.root_node = DecisionTreeNode(game_state,root_agent_object.index,root_agent_object)
+      agent_that_moved_here = (root_agent_object.index + 3) % 4
+
+      self.root_node = DecisionTreeNode(game_state,agent_that_moved_here,root_agent_object)
 
       self.add_children(self.root_node, 1)
 
@@ -58,28 +60,68 @@ class DecisionTree :
       return
 
     future_states = []
+    agent_to_move = (tree_node.agent_that_moved_here + 1) % 4
 
-    if (tree_node.node_state.data.agentStates[tree_node.agent_index].configuration == None):
+    if (tree_node.node_state.data.agentStates[agent_to_move].configuration == None):
       future_states.append(tree_node.node_state) # I.E current state
     else:
-      actions = tree_node.node_state.getLegalActions(tree_node.agent_index)
+      actions = tree_node.node_state.getLegalActions(agent_to_move)
       for i in actions:
-        future_states.append(tree_node.node_state.generateSuccessor(tree_node.agent_index, i))
+        future_states.append(tree_node.node_state.generateSuccessor(agent_to_move, i))
 
     for i in range(len(future_states)):
-      future_node_index = (tree_node.agent_index + 1) % 4
-      next_node = tree_node.add_child(future_states[i], future_node_index)
+      next_node = tree_node.add_child(future_states[i], agent_to_move)
 
       self.add_children(next_node,level + 1)
 
 
+  def get_action(self):
+    self.propagate_tree(self.root_node,0)
+
+    child_scores = []
+    for i in self.root_node.children:
+      child_scores.append(i.propagated_score)
+
+    max_index = child_scores.index(max(child_scores))
+
+    actions = self.root_node.node_state.getLegalActions((self.root_node.agent_that_moved_here + 1) % 4)
+
+    return actions[max_index]
+
+
+  def propagate_tree(self,current_node,level):
+    if level == self.levels:
+      current_node.propagated_score = current_node.node_score
+      return current_node.propagated_score
+
+    if (current_node.agent_that_moved_here == self.root_node.agent_that_moved_here or (current_node.agent_that_moved_here + 2) % 4 == self.root_node.agent_that_moved_here):
+      enemy_team = False
+    else:
+      enemy_team = True
+
+    child_scores = []
+
+    for i in current_node.children:
+      child_score = self.propagate_tree(i,level+1)
+      child_scores.append(child_score)
+
+    if enemy_team:
+      current_node.propagated_score = min(child_scores)
+    else:
+      current_node.propagated_score = max(child_scores)
+
+    return current_node.propagated_score
+
+
+
 
 class DecisionTreeNode :
-  def __init__(self,game_state,agent_index,root_agent_object):
+  def __init__(self,game_state,agent_that_moved_here,root_agent_object):
     self.node_state = game_state
-    self.agent_index = agent_index #The index of the agent that is supposed to move
+    self.agent_that_moved_here = agent_that_moved_here #The index of the agent that moved to this state
     self.root_agent_object = root_agent_object
     self.node_score = self.evaluate_state()
+    self.propagated_score = 0
     self.children = []
 
 
@@ -90,24 +132,37 @@ class DecisionTreeNode :
     return child_node
 
   def evaluate_state(self):
-    if (self.agent_index == self.root_agent_object.index or (self.agent_index + 2) % 4 == self.root_agent_object.index):
+    if (self.agent_that_moved_here == self.root_agent_object.index or (self.agent_that_moved_here + 2) % 4 == self.root_agent_object.index):
       enemy_team = False
     else:
       enemy_team = True
 
-    if (self.node_state.data.agentStates[self.agent_index].configuration != None):
-      agent_position = self.node_state.data.agentStates[self.agent_index].configuration.pos
-    else:
-      agent_position = (1,1)
+    agent_positions = []
 
-    distance_to_food_factor = self.get_distances_to_food_factor(agent_position,enemy_team)
+    for i in range(0,4):
+      if (self.node_state.data.agentStates[i].configuration != None):
+        agent_positions.append(self.node_state.data.agentStates[i].configuration.pos)
+      else:
+        agent_positions.append((1,1))
 
-    return_with_food_factor = self.get_return_with_food_factor(agent_position,self.agent_index)
+    my_index = self.agent_that_moved_here
+    team_mates_index = (self.agent_that_moved_here + 2) % 4
 
-    state_value = distance_to_food_factor + return_with_food_factor
-    
-    if (enemy_team):
+    state_value = self.evaluate_state_one_agent(agent_positions[my_index],my_index,enemy_team) + self.evaluate_state_one_agent(agent_positions[team_mates_index],team_mates_index,enemy_team)
+
+    if (enemy_team): #If not enemy team is moving, then child nodes should have positive state values
       state_value = - state_value
+
+    return state_value
+
+  def evaluate_state_one_agent(self,agent_position,agent_index,agent_is_on_enemy_team):
+    distance_to_food_factor = self.get_distances_to_food_factor(agent_position, agent_is_on_enemy_team)
+
+    return_with_food_factor = self.get_return_with_food_factor(agent_position, agent_index)
+
+    score_factor = self.get_score_factor()
+
+    state_value = distance_to_food_factor# + return_with_food_factor + score_factor
 
     return state_value
 
@@ -131,13 +186,18 @@ class DecisionTreeNode :
 
     return distance_to_food_factor
 
+  def get_score_factor(self):
+    score_diff = CaptureAgent.getScore(self.root_agent_object,self.node_state)
+
+    return 3 * score_diff
+
   def get_return_with_food_factor(self,agent_position,agent_index):
-    food_carrying = self.node_state.data.agentStates[self.agent_index].numCarrying
+    food_carrying = self.node_state.data.agentStates[agent_index].numCarrying
 
     if food_carrying == 0:
       return 0
 
-    distance_home = self.get_closest_distance_to_home(agent_position,self.agent_index)
+    distance_home = self.get_closest_distance_to_home(agent_position,agent_index)
 
     return_with_food_factor = (1 / distance_home) * food_carrying * 1000
 
@@ -201,7 +261,6 @@ class DummyAgent(CaptureAgent):
     Your initialization code goes here, if you need any.
     '''
 
-
   def chooseAction(self, gameState):
     """
     Picks among actions randomly.
@@ -209,23 +268,25 @@ class DummyAgent(CaptureAgent):
     actions = gameState.getLegalActions(self.index)
 
     decision_tree = DecisionTree(gameState,self)
+    
+    return decision_tree.get_action()
 
-    a = CaptureAgent.getCurrentObservation(self)
+    #a = CaptureAgent.getCurrentObservation(self)
 
-    a = CaptureAgent.getFood(self,gameState)
+    #a = CaptureAgent.getFood(self,gameState)
 
-    a = CaptureAgent.getMazeDistance(self, (1, 1), (3, 1))
-
-
-
-
+    #a = CaptureAgent.getMazeDistance(self, (1, 1), (3, 1))
 
 
-    a = 2
+
+
+
+
+    #a = 2
 
     '''
     You should change this in your own agent.
     '''
 
-    return random.choice(actions)
+    #return random.choice(actions)
 
