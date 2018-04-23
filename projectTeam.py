@@ -52,6 +52,8 @@ class DecisionTree :
   def __init__(self,game_state,root_agent_object):
       agent_that_moved_here = (root_agent_object.index + 3) % 4
 
+      self.ai_agent = root_agent_object
+
       self.root_node = DecisionTreeNode(game_state,agent_that_moved_here,root_agent_object)
 
       self.add_children(self.root_node, 1)
@@ -121,6 +123,7 @@ class DecisionTreeNode :
     self.node_state = game_state
     self.agent_that_moved_here = agent_that_moved_here #The index of the agent that moved to this state
     self.root_agent_object = root_agent_object
+    self.ai_agent = root_agent_object
     self.node_score = self.evaluate_state()
     self.propagated_score = 0
     self.children = []
@@ -144,7 +147,7 @@ class DecisionTreeNode :
       if (self.node_state.data.agentStates[i].configuration != None):
         agent_positions.append(self.node_state.data.agentStates[i].configuration.pos)
       else:
-        agent_positions.append((1,1))
+        agent_positions.append(self.ai_agent.get_most_likely_distance_from_noisy_reading(i))
 
     my_index = self.agent_that_moved_here
     team_mates_index = (self.agent_that_moved_here + 2) % 4
@@ -231,19 +234,12 @@ class DecisionTreeNode :
   # try features for the upper and lower half so the agent not in the middle could settle on either one of those points
   #features['DistanceToUpperHalf'] = self.getMazeDistance(myPos, self.upperHalf)
   #features['DistanceToLowerHalf'] = self.getMazeDistance(myPos, self.lowerHalf)
-
+  #    if both_defending:
+ #     features['distanceFromEachOther'] = self.getMazeDistance(teamMembersPositions[0], teamMembersPositions[1])
+ #   else:
+  #    features['distanceFromEachOther'] = 0
 
   #def get_num_invaders(self,agent_position, agent_index):
-
-  #def get_closest_enemy_distance(self):
-  #  final_enemy_distances = []
-  #  for enemy in self.enemy_indexes:
-  #    if successor.getAgentState(enemy).getPosition() != None:
-  #      final_enemy_distances.append(successor.getAgentState(enemy).getPosition())
-  #    else:
-  #      index = self.getEnemyListIndex(enemy)
-  #      final_enemy_distances.append(list_of_most_probable_locations[index])
-
 
 class DummyAgent(CaptureAgent):
   """
@@ -283,6 +279,8 @@ class DummyAgent(CaptureAgent):
     self.team_indexes = self.getTeam(gameState)
 
     #Map choke points
+    self.LayoutHalfWayPoint_Width = gameState.data.layout.width/2
+    self.LayoutHalfWayPoint_Height = gameState.data.layout.height/2
     self.middle = (self.LayoutHalfWayPoint_Width, self.LayoutHalfWayPoint_Height)
     self.middle = self.find_place_in_grid(gameState, self.middle)
     # try features for the upper and lower half so the agent not in the middle could settle on either one of those points
@@ -333,21 +331,6 @@ class DummyAgent(CaptureAgent):
     #a = CaptureAgent.getFood(self,gameState)
 
     #a = CaptureAgent.getMazeDistance(self, (1, 1), (3, 1))
-
-
-
-
-
-
-    #a = 2
-
-    '''
-    You should change this in your own agent.
-    '''
-
-    #return random.choice(actions)
-
-
 
   ###Utility functions###
 
