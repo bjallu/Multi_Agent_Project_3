@@ -47,7 +47,7 @@ def createTeam(firstIndex, secondIndex, isRed,
 ##########
 
 class DecisionTree :
-  levels = 5
+  levels = 3
 
   def __init__(self,game_state,root_agent_object):
       agent_that_moved_here = (root_agent_object.index + 3) % 4
@@ -154,6 +154,12 @@ class DecisionTreeNode :
 
     state_value = self.evaluate_state_one_agent(agent_positions[my_index],my_index,enemy_team) + self.evaluate_state_one_agent(agent_positions[team_mates_index],team_mates_index,enemy_team)
 
+    maintain_distance_factor = self.get_maintain_distance_factor(agent_positions[my_index],agent_positions[team_mates_index])
+
+    score_factor = self.get_score_factor()
+
+    state_value += score_factor
+
     if (enemy_team): #If not enemy team is moving, then child nodes should have positive state values
       state_value = - state_value
 
@@ -184,6 +190,8 @@ class DecisionTreeNode :
           distance = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, (i,j))
           distances.append(distance)
 
+    if (len(distances) == 0): return 1
+
     distance_to_food_factor = sum(distances) / float(len(distances))
     distance_to_food_factor = 1 / distance_to_food_factor
     distance_to_food_factor = distance_to_food_factor * 100
@@ -193,7 +201,18 @@ class DecisionTreeNode :
   def get_score_factor(self):
     score_diff = CaptureAgent.getScore(self.root_agent_object,self.node_state)
 
-    return 3 * score_diff
+    return 10000 * score_diff
+
+  def get_food_carried_factor(self,agent_index):
+    food_carrying = self.node_state.data.agentStates[agent_index].numCarrying
+
+    return 1000 * food_carrying
+
+  def get_maintain_distance_factor(self,agent_position_1,agent_position_2):
+    distance_between = CaptureAgent.getMazeDistance(self.root_agent_object,agent_position_1,agent_position_2)
+
+    return distance_between / 300
+
 
   def get_return_with_food_factor(self,agent_position,agent_index):
     food_carrying = self.node_state.data.agentStates[agent_index].numCarrying
@@ -203,7 +222,7 @@ class DecisionTreeNode :
 
     distance_home = self.get_closest_distance_to_home(agent_position,agent_index)
 
-    return_with_food_factor = (1 / distance_home) * food_carrying * 1000
+    return_with_food_factor = (1 / distance_home) * food_carrying * 100
 
     return return_with_food_factor
 
