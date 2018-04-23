@@ -122,7 +122,6 @@ class DecisionTreeNode :
     self.node_state = game_state
     self.agent_that_moved_here = agent_that_moved_here #The index of the agent that moved to this state
     self.root_agent_object = root_agent_object
-    self.ai_agent = root_agent_object
     self.node_score = self.evaluate_state()
     self.propagated_score = 0
     self.children = []
@@ -146,7 +145,7 @@ class DecisionTreeNode :
       if (self.node_state.data.agentStates[i].configuration != None):
         agent_positions.append(self.node_state.data.agentStates[i].configuration.pos)
       else:
-        agent_positions.append(self.ai_agent.get_most_likely_distance_from_noisy_reading(i))
+        agent_positions.append(self.root_agent_object.get_most_likely_distance_from_noisy_reading(i))
 
     my_index = self.agent_that_moved_here
     team_mates_index = (self.agent_that_moved_here + 2) % 4
@@ -169,9 +168,9 @@ class DecisionTreeNode :
 
     return_with_food_factor = self.get_return_with_food_factor(agent_position, agent_index)
 
-    score_factor = self.get_score_factor()
+    food_carried_factor = self.get_food_carried_factor(agent_index)
 
-    state_value = distance_to_food_factor# + return_with_food_factor + score_factor
+    state_value = distance_to_food_factor + return_with_food_factor #+ food_carried_factor
 
     return state_value
 
@@ -191,9 +190,11 @@ class DecisionTreeNode :
 
     if (len(distances) == 0): return 1
 
-    distance_to_food_factor = sum(distances) / float(len(distances))
+    #distance_to_food_factor = sum(distances) / float(len(distances))
+    distance_to_food_factor = min(distances)
     distance_to_food_factor = 1 / distance_to_food_factor
-    distance_to_food_factor = distance_to_food_factor * 100
+    distance_to_food_factor = distance_to_food_factor * 1
+
 
     return distance_to_food_factor
 
@@ -206,6 +207,7 @@ class DecisionTreeNode :
     food_carrying = self.node_state.data.agentStates[agent_index].numCarrying
 
     return 1000 * food_carrying
+
 
   def get_maintain_distance_factor(self,agent_position_1,agent_position_2):
     distance_between = CaptureAgent.getMazeDistance(self.root_agent_object,agent_position_1,agent_position_2)
@@ -236,7 +238,6 @@ class DecisionTreeNode :
       col = int(width/2)
     else:
       col = int(width/2 - 1)
-
 
     distances = []
 
@@ -339,6 +340,8 @@ class DummyAgent(CaptureAgent):
     actions = gameState.getLegalActions(self.index)
 
     decision_tree = DecisionTree(gameState, self)
+
+    time.sleep(0.1)
     
     return decision_tree.get_action()
 
