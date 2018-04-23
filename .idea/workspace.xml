@@ -21,10 +21,8 @@
             <file leaf-file-name="projectTeam_bu_2.py" pinned="false" current-in-tab="true">
               <entry file="file://$PROJECT_DIR$/projectTeam_bu_2.py">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="862">
-                    <caret line="304" column="0" lean-forward="true" selection-start-line="304" selection-start-column="0" selection-end-line="304" selection-end-column="0" />
-                  <state relative-caret-position="293">
-                    <caret line="221" column="57" lean-forward="true" selection-start-line="221" selection-start-column="0" selection-end-line="222" selection-end-column="0" />
+                  <state relative-caret-position="350">
+                    <caret line="328" column="25" lean-forward="true" selection-start-line="167" selection-start-column="2" selection-end-line="328" selection-end-column="25" />
                     <folding />
                   </state>
                 </provider>
@@ -82,8 +80,8 @@
       <file leaf-file-name="projectTeam.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/projectTeam.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="409" column="50" lean-forward="true" selection-start-line="409" selection-start-column="50" selection-end-line="409" selection-end-column="50" />
+            <state relative-caret-position="515">
+              <caret line="177" column="119" lean-forward="true" selection-start-line="177" selection-start-column="119" selection-end-line="177" selection-end-column="119" />
               <folding>
                 <element signature="e#649#687#0" expanded="true" />
               </folding>
@@ -150,7 +148,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-7" />
     <option name="width" value="974" />
     <option name="height" value="1047" />
@@ -270,15 +268,15 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="0" width="974" height="1047" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.12447917" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32655245" sideWeight="0.50417536" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32343584" sideWeight="0.50208336" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32655245" sideWeight="0.49582464" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32343584" sideWeight="0.49791667" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -684,16 +682,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/projectTeam_bu_2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="293">
-          <caret line="221" column="57" lean-forward="true" selection-start-line="221" selection-start-column="0" selection-end-line="222" selection-end-column="0" />
+        <state relative-caret-position="350">
+          <caret line="328" column="25" lean-forward="true" selection-start-line="167" selection-start-column="2" selection-end-line="328" selection-end-column="25" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/projectTeam.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="409" column="50" lean-forward="true" selection-start-line="409" selection-start-column="50" selection-end-line="409" selection-end-column="50" />
+        <state relative-caret-position="515">
+          <caret line="177" column="119" lean-forward="true" selection-start-line="177" selection-start-column="119" selection-end-line="177" selection-end-column="119" />
           <folding>
             <element signature="e#649#687#0" expanded="true" />
           </folding>
