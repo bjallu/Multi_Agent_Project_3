@@ -43,7 +43,6 @@ def createTeam(firstIndex, secondIndex, isRed,
   any extra arguments, so you should make sure that the default
   behavior is what you want for the nightly contest.
   """
-
   # The following line is an example only; feel free to change it.
   return [eval(first)(firstIndex), eval(second)(secondIndex)]
 
@@ -81,7 +80,6 @@ class LuckyLuke(CaptureAgent):
 
     self.LayoutHalfWayPoint_Width = gameState.data.layout.width/2
     self.LayoutHalfWayPoint_Height = gameState.data.layout.height/2
-    CaptureAgent.display = PacmanGraphics
     CaptureAgent.registerInitialState(self, gameState)
     grid_fiesta = []
 
@@ -93,10 +91,7 @@ class LuckyLuke(CaptureAgent):
           grid_fiesta.append((x, y))
 
     self.grid_to_work_with = grid_fiesta
-    #self.grid_to_work_with = #Grid.asList()
-    #print(self.grid_to_work_with)
-
-    #self.debugDraw(self.grid_to_work_with,[1,0,0],True)
+    #
 
     self.middle = (self.LayoutHalfWayPoint_Width, self.LayoutHalfWayPoint_Height)
     self.middle = self.find_place_in_grid(gameState, self.middle)
@@ -107,8 +102,15 @@ class LuckyLuke(CaptureAgent):
     self.upperHalf = self.find_place_in_grid(gameState, self.upperHalf)
     #scaredTimer #maybe if scared run into the nearest player if he is x close to reset or hide? i dont know which is better
     self.enemy_indexes = self.getOpponents(gameState)
-    #dictionary function inside this pacman thingy
+    self.team_indexes = self.getTeam(gameState)
+    min_value = min(self.enemy_indexes)
+    if min == 0:
+      self.enemy_to_update_possible_locations = self.index - 1
+    else:
+      self.enemy_to_update_possible_locations = self.index + 1
     self.map = self.convert_tuples_to_list(self.grid_to_work_with)
+
+    self.invaders_must_die = []
 
     ## TODO ###
     #Make this code somewhat more smarter and more intuitive but it gets the job done for now
@@ -160,28 +162,23 @@ class LuckyLuke(CaptureAgent):
     return location
 
   def chooseAction(self, gameState):
-    '''
-    You should change this in your own agent.
-    '''
-    #dist = gameState.getAgentDistances()
-    #enemies = self.getOpponents(gameState)
-    #for daltonBrother in enemies:
-    #  int = gameState.getInitialAgentPosition(daltonBrother)
-    #  print(dist[daltonBrother])
-
     #mby add some function if no one is attacking us
     # Check if the enemy has any pacman.
 
     #TODOOO ADD DECAYING FACTOR / BIAS I:E FAVOUR POSITONS THAT ARE FURTHER AWAY FROM THEIR INITAL POSITON
     # AND CLOSER TO OUR HALFWAY POINT
-    # find out if we can know that an enemy dies we set it to the starting point with 100% odds
-    #
-    #
-    #
     actions = gameState.getLegalActions(self.index)
     pos = gameState.getAgentState(self.index).getPosition()
-    #print(actions)
-    #print(actions_2)
+
+    self.update_enemy_possible_locations_depending_on_round(self.enemy_to_update_possible_locations, gameState)
+    #for enemy in self.enemy_indexes:
+    #  index = self.getEnemyListIndex(enemy)
+    #  list_to_print = [i for i in self.emission_probabilties_for_each_location_for_each_agent[index] if i[1] != 0]
+    #  ls = [tuple(i[0]) for i in list_to_print]
+    #  if index == 0:
+    #    self.debugDraw(ls, [1, 0, 0], True)
+    #  else:
+    #    self.debugDraw(ls, [0, 1, 0], True)
 
     # You can profile your evaluation time by uncommenting these lines
     # start = time.time()
@@ -204,7 +201,7 @@ class LuckyLuke(CaptureAgent):
       return bestAction
 
     for action in actions:
-      successor =self.getSuccessor(gameState, action)
+      successor = self.getSuccessor(gameState, action)
       enemies = self.getOpponents(gameState)
       #team = self.getTeam(gameState)
       #enemy_kill_count = [AgentRules.checkDeath(gameState, i) for i in enemies]
@@ -244,11 +241,20 @@ class LuckyLuke(CaptureAgent):
   def getFeatures(self, gameState, action):
     features = util.Counter()
     successor = self.getSuccessor(gameState, action)
-
     myState = successor.getAgentState(self.index)
+    #print(myState.observationHistory)
     myPos = myState.getPosition()
     squad = [successor.getAgentState(i) for i in self.getTeam(successor)]
     teamMembersPositions = [i.getPosition() for i in squad]
+    otherDudePos = 0
+    if len(squad) > 1:
+      #print(squad)
+      # can use id check here maybe takes care of this wierd problem
+      otherDude = [i for i in squad if i != myState]
+      # I still don't know wwhy I need this check but we need it
+      if len(otherDude) > 0:
+        otherDude = otherDude[0]
+        otherDudePos = otherDude.getPosition()
     #get Team Mates state and position
     both_defending = True
     for player in squad:
@@ -258,32 +264,38 @@ class LuckyLuke(CaptureAgent):
     # Computes whether we're on defense (1) or offense (0)
     features['onDefense'] = 1
     if myState.isPacman: features['onDefense'] = 0
-
-    #    invaders = [a for a in self.enemies if
-    #            gameState.getAgentState(a).isPacman]
-    #    numInvaders = len(invaders)
-
     # Computes distance to invaders we can see
     enemies = [successor.getAgentState(i) for i in self.getOpponents(successor)]
+    old_invaderList = self.invaders_must_die
+    new_invaderList = [a for a in enemies if a.isPacman]
+    self.invaders_must_die = new_invaderList
+    # we killed some one
+    if len(new_invaderList) < len(old_invaderList):
+      #get that agent and reset his probabilty pos to the inital position
+      enemies_to_reset_locations_for = list(set(old_invaderList) - set(new_invaderList))
+      enemy_indexes = self.enemy_indexes
+      enemy_indexes_to_reset = []
+      if len(enemies_to_reset_locations_for) > 0:
+        for index in enemy_indexes:
+          index_to_store = index
+          state = gameState.getAgentState(index)
+          for lad in enemies_to_reset_locations_for:
+            if state == lad:
+              enemy_indexes_to_reset.append(index_to_store)
+      for enemy in enemy_indexes_to_reset:
+        # to do find index of the enemy that just diededed
+        initPos = gameState.getInitialAgentPosition(enemy)
+        initPos = [initPos[0], initPos[1]]
+        self.reset_agent_probabilties_when_we_know_the_true_position(enemy, initPos)
     #Now we update the noisy distances for those that arent within our sensor range
 
-    #for action in actions:
-    #successor =self.getSuccessor(gameState, action)
-    #enemies_2 = self.getOpponents(successor)
-    #team = self.getTeam(gameState) figure out how to get kill info then we rush to get two pellets then turn back
-    #enemy_kill_count = [AgentRules.checkDeath(successor, i) for i in enemies_2]
-    #team_kill_c = [AgentRules.checkDeath(gameState, i) for i in team]
-    #print(enemy_kill_count)
-      #print(team_kill_c)
-    #AgentRules.checkDeath(state, agentIndex)
-    #heh = [d.checkDeath() for d in enemies]
+    #### NEED TO FIGURE OUT JIUST TO CALL THIS ONCE PER TURN
+    # or
+    # SMART BJARTUR we assign an enemy to update to each agent indepentently
+
 
     #  IF A PELLET dissappears we know in legalmoves from that location
     # that a pacman is there
-
-    #invaders_must_die = [a for a in enemies if a.isPacman]
-    #print(invaders_must_die)
-
     invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
     features['numInvaders'] = len(invaders)
     if len(invaders) > 0:
@@ -306,6 +318,8 @@ class LuckyLuke(CaptureAgent):
     else:
       features['distanceFromEachOther'] = 0
 
+    '''
+
     list_of_enemies_to_check_noisy_distance_for = [i for i in self.enemy_indexes if successor.getAgentState(i).getPosition() == None]
     list_of_enemies_in_range = [i for i in self.enemy_indexes if i not in list_of_enemies_to_check_noisy_distance_for]
 
@@ -321,10 +335,15 @@ class LuckyLuke(CaptureAgent):
     #enemies_within_sensor_range_position = [e for e in enemies if e.getPosition() != None]
 
     #### NEED TO FIGURE OUT JIUST TO CALL THIS ONCE PER TURN
-    self.update_enemy_possible_locations_depending_on_round(gameState)
+    # or
+    # SMART BJARTUR we assign an enemy to update to each agent indepentently
+    self.update_enemy_possible_locations_depending_on_round(self.enemy_to_update_possible_locations, gameState)
 
     for enemy in self.enemy_indexes:
+      #Take both of our agents into account
       self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
+      if otherDudePos != 0:
+        self.updateNoisyDistanceProbabilities(otherDudePos, enemy, gameState)
       list_of_most_probable_locations.append(self.get_most_likely_distance_from_noisy_reading(enemy))
 
     #todo check this bjartur something fhishy somtiems it returns zero also add the bias for places closer to us that
@@ -346,10 +365,10 @@ class LuckyLuke(CaptureAgent):
       list_to_print = [i for i in self.emission_probabilties_for_each_location_for_each_agent[index] if i[1] != 0]
       ls = [tuple(i[0]) for i in list_to_print]
       #print(ls)
-      #if index == 0:
-      #  self.debugDraw(ls,[1,0,0],True)
-      #else:
-       # self.debugDraw(ls, [0, 1, 0], True)
+      if index == 0:
+        self.debugDraw(ls, [1,0,0], True)
+      else:
+        self.debugDraw(ls, [0, 1, 0], True)
     #self.debugDraw(final_enemy_distances,[1,0,0],False)
 
     distance_to_each_enemy_most_probable_location = [self.getMazeDistance(myPos, i) for i in list_of_most_probable_locations]
@@ -358,6 +377,7 @@ class LuckyLuke(CaptureAgent):
     #if we dont get the true distance we turn to the most probable noisy distance using hmms n stuff
     # Also possibilty to work with the scared timer of our agent
     # if otherAgentState.scaredTimer <= 0:
+    '''
     return features
 
   def getWeights(self, gameState, action):
@@ -383,25 +403,23 @@ class LuckyLuke(CaptureAgent):
   #noisyDistances = gameState.getAgentDistances()
 
   ## Todo we know after each action our enemies could only have moved a single step in some possible action
-  def update_enemy_possible_locations_depending_on_round(self, gameState):
-    for enemy in self.enemy_indexes:
-      # all legal actions for the enemy depending on possible locations
-      list_index = self.getEnemyListIndex(enemy)
-      #    invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
-      all_locations_not_with_zero_probabilty = [i for i in self.emission_probabilties_for_each_location_for_each_agent[list_index] if i[1] != 0]
-      all_possible_moves = []
-      for i in all_locations_not_with_zero_probabilty:
-        posible_moves_from_i = self.get_legal_actions_from_location(i[0])
-        all_possible_moves.extend(posible_moves_from_i)
-      #Give all possible moves equal probability and then multiply those with odds
-      number_of_possible_locations_to_move_to = len(all_possible_moves)
-      for move in all_possible_moves:
-        #find index of possible moves
-        counter = 0
-        for i in self.emission_probabilties_for_each_location_for_each_agent[list_index]:
-          if i[0] == move:
-            i[1] = 1/number_of_possible_locations_to_move_to
-            #new_belief[newPos] += prob * self.beliefs[enemy][oldPos]
+  def update_enemy_possible_locations_depending_on_round(self, enemy_to_update, gameState):
+    # all legal actions for the enemy depending on possible locations
+    list_index = self.getEnemyListIndex(enemy_to_update)
+    #    invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
+    all_locations_not_with_zero_probabilty = [i for i in self.emission_probabilties_for_each_location_for_each_agent[list_index] if i[1] != 0]
+    all_possible_moves = []
+    for i in all_locations_not_with_zero_probabilty:
+      posible_moves_from_i = self.get_legal_actions_from_location(i[0])
+      all_possible_moves.extend(posible_moves_from_i)
+    #Give all possible moves equal probability and then multiply those with odds
+    number_of_possible_locations_to_move_to = len(all_possible_moves)
+    for move in all_possible_moves:
+      #find index of possible moves
+      counter = 0
+      for i in self.emission_probabilties_for_each_location_for_each_agent[list_index]:
+        if i[0] == move:
+          i[1] = 1/number_of_possible_locations_to_move_to
 
   def get_legal_actions_from_location(self, location):
     location = list(location)
@@ -414,17 +432,12 @@ class LuckyLuke(CaptureAgent):
     left = [location[0]-1, location[1]]
     right = [location[0]+1, location[1]]
     candidates = [up, down, left, right]
-   # self.debugDraw(candidates, [0, 0, 1], False)
     for candidate in candidates:
       if candidate in self.map:
-      #  self.debugDraw([candidate], [0, 0.5, 0.5], False)
         list_of_possible_coordinates.append(candidate)
     return list_of_possible_coordinates
 
-  #def triangulation(self, distance):
-
   # TODOOO
-  # IF we ever spot a certain agent we can reset his emission odds to pin point on that excat location
   # add bias to how close the location is to our half since that would probably be more likely
 
   def updateNoisyDistanceProbabilities(self, mypos, enemy_we_are_checking, gameState):
@@ -461,4 +474,7 @@ class LuckyLuke(CaptureAgent):
       index = self.getEnemyListIndex(enemy)
       listCopy = [i[0] for i in self.emission_probabilties_for_each_location_for_each_agent[index]]
       location_index = listCopy.index(true_position)
+      print('this works?')
       self.emission_probabilties_for_each_location_for_each_agent[index][location_index][1] = 1.0
+      print(self.emission_probabilties_for_each_location_for_each_agent[index][location_index])
+#  def find_if_we_recently_killed_an_enemy(self,):
