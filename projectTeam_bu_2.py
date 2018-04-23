@@ -152,11 +152,13 @@ class DecisionTreeNode :
 
     state_value = self.evaluate_state_one_agent(agent_positions,my_index,enemy_team) + self.evaluate_state_one_agent(agent_positions,team_mates_index,enemy_team)
 
-    maintain_distance_factor = self.get_maintain_distance_factor(agent_positions[my_index],agent_positions[team_mates_index])
+    #maintain_distance_factor = self.get_maintain_distance_factor(agent_positions[my_index],agent_positions[team_mates_index])
+
+    enemies_are_scared_factor = self.get_enemies_are_scared_factor(my_index)
 
     score_factor = self.get_score_factor()
 
-    state_value += score_factor
+    state_value += (score_factor + enemies_are_scared_factor)
 
     if (enemy_team): #If not enemy team is moving, then child nodes should have positive state values
       state_value = - state_value
@@ -167,8 +169,6 @@ class DecisionTreeNode :
     distance_to_food_factor = self.get_distances_to_food_factor(agent_positions[agent_index], agent_index,agent_is_on_enemy_team)
 
     return_with_food_factor = self.get_return_with_food_factor(agent_positions[agent_index], agent_index)
-
-    #food_carried_factor = self.get_food_carried_factor(agent_index)
 
     distance_to_enemy_ghosts_factor = self.get_distance_to_enemy_ghosts_factor(agent_positions, agent_index)
 
@@ -185,7 +185,7 @@ class DecisionTreeNode :
     enemy_1_is_ghost = self.is_ghost(enemy_agent_index_1)
     enemy_2_is_ghost = self.is_ghost(enemy_agent_index_2)
 
-    if i_am_ghost:
+    if i_am_ghost or (not enemy_1_is_ghost and not enemy_2_is_ghost):
       return 0
 
     distance_enemy_1 = CaptureAgent.getMazeDistance(self.root_agent_object, agent_positions[agent_index], agent_positions[enemy_agent_index_1])
@@ -203,7 +203,7 @@ class DecisionTreeNode :
 
     if distance == 0:
       distance = 1
-    distane_to_enemy_ghosts_factor = (-1 / distance)
+    distane_to_enemy_ghosts_factor = (-1 / distance) * 5
 
     return distane_to_enemy_ghosts_factor
 
@@ -245,7 +245,7 @@ class DecisionTreeNode :
 
     for i in range(0,food.width):
       for j in range(0,food.height):
-        if food.data[i][j]:# or our_capsule == (i,j):
+        if food.data[i][j] or our_capsule == (i,j):
           distance = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, (i,j))
           distances.append(distance)
 
@@ -277,6 +277,19 @@ class DecisionTreeNode :
     distance_between = CaptureAgent.getMazeDistance(self.root_agent_object,agent_position_1,agent_position_2)
 
     return distance_between / 300
+
+  def get_enemies_are_scared_factor(self,agent_index):
+    enemy_agent_index_1 = (agent_index + 1) % 4
+    enemy_agent_index_2 = (agent_index + 3) % 4
+
+    ret_val = 0
+
+    if self.node_state.data.agentStates[enemy_agent_index_1].scaredTimer > 0:
+      ret_val += 10
+    if self.node_state.data.agentStates[enemy_agent_index_2].scaredTimer > 0:
+      ret_val += 10
+
+    return ret_val
 
 
   def get_return_with_food_factor(self,agent_position,agent_index):
