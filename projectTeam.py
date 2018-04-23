@@ -157,7 +157,7 @@ class DecisionTreeNode :
       maintain_distance_factor = self.get_maintain_distance_factor(agent_positions[my_index],agent_positions[team_mates_index])
       enemies_are_scared_factor = self.get_enemies_are_scared_factor(my_index)
       score_factor = self.get_score_factor()
-      state_value += (score_factor + enemies_are_scared_factor)
+      state_value += (score_factor + enemies_are_scared_factor)# + maintain_distance_factor)
     else:
       state_value = self.evalute_state_one_agent_defensive(agent_positions[my_index], my_index, enemy_team, agent_positions[team_mates_index]) + self.evalute_state_one_agent_defensive(agent_positions[team_mates_index],team_mates_index,enemy_team,agent_positions[team_mates_index])
 
@@ -296,7 +296,7 @@ class DecisionTreeNode :
   def get_maintain_distance_factor(self,agent_position_1,agent_position_2):
     distance_between = CaptureAgent.getMazeDistance(self.root_agent_object,agent_position_1,agent_position_2)
 
-    return distance_between / 300
+    return distance_between/300
 
   def get_enemies_are_scared_factor(self,agent_index):
     enemy_agent_index_1 = (agent_index + 1) % 4
@@ -440,7 +440,7 @@ class DummyAgent(CaptureAgent):
     # or if we are winning
     # i.e. if we kill some1 we go offensive
     # then if we are winning on the scoreboard we go defensive
-    decision_tree = DecisionTree(gameState, self, True)#self.offensive)
+    decision_tree = DecisionTree(gameState, self, self.offensive)
     return decision_tree.get_action()
     #updateNoisyDistanceProbabilities
   ###Utility functions###
