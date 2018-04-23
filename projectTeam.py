@@ -226,8 +226,23 @@ class DecisionTreeNode :
 
     return min(distances)
 
+  #def get_closest_chokepoint(self):
+  #    features['distanceToMiddle'] = self.getMazeDistance(myPos, self.middle)
+  # try features for the upper and lower half so the agent not in the middle could settle on either one of those points
+  #features['DistanceToUpperHalf'] = self.getMazeDistance(myPos, self.upperHalf)
+  #features['DistanceToLowerHalf'] = self.getMazeDistance(myPos, self.lowerHalf)
 
 
+  #def get_num_invaders(self,agent_position, agent_index):
+
+  #def get_closest_enemy_distance(self):
+  #  final_enemy_distances = []
+  #  for enemy in self.enemy_indexes:
+  #    if successor.getAgentState(enemy).getPosition() != None:
+  #      final_enemy_distances.append(successor.getAgentState(enemy).getPosition())
+  #    else:
+  #      index = self.getEnemyListIndex(enemy)
+  #      final_enemy_distances.append(list_of_most_probable_locations[index])
 
 
 class DummyAgent(CaptureAgent):
@@ -267,6 +282,15 @@ class DummyAgent(CaptureAgent):
     self.enemy_indexes = self.getOpponents(gameState)
     self.team_indexes = self.getTeam(gameState)
 
+    #Map choke points
+    self.middle = (self.LayoutHalfWayPoint_Width, self.LayoutHalfWayPoint_Height)
+    self.middle = self.find_place_in_grid(gameState, self.middle)
+    # try features for the upper and lower half so the agent not in the middle could settle on either one of those points
+    self.lowerHalf = (self.LayoutHalfWayPoint_Width, gameState.data.layout.height/2-0.25*self.LayoutHalfWayPoint_Height)
+    self.lowerHalf = self.find_place_in_grid(gameState, self.lowerHalf)
+    self.upperHalf = (self.LayoutHalfWayPoint_Width, gameState.data.layout.height/2+0.25*self.LayoutHalfWayPoint_Height)
+    self.upperHalf = self.find_place_in_grid(gameState, self.upperHalf)
+
     min_value = min(self.enemy_indexes)
     if min == 0:
       self.enemy_to_update_possible_locations = self.index - 1
@@ -281,36 +305,20 @@ class DummyAgent(CaptureAgent):
     #First update enemy position
     self.update_enemy_possible_locations_depending_on_round(self.enemy_to_update_possible_locations, gameState)
     kill = self.check_if_we_killed_an_enemy(gameState)
-    print(kill)
     list_of_enemies_in_range = [i for i in self.enemy_indexes if gameState.getAgentState(i).getPosition() != None]
     for i in list_of_enemies_in_range:
       self.reset_agent_probabilties_when_we_know_the_true_position(i, list(gameState.getAgentState(i).getPosition()))
     #Get the position of the other agent at this gameState
-    for enemy in self.enemy_indexes:
-      index = self.getEnemyListIndex(enemy)
-      list_to_print = [i for i in self.emission_probabilties_for_each_location_for_each_agent[index] if i[1] != 0]
-      ls = [tuple(i[0]) for i in list_to_print]
-      if index == 0:
-        self.debugDraw(ls, [1, 0, 0], True)
     #we could swiss to attack if we kill some1 and then return to defensive stance when we have returned some pellets
-
     myState = gameState.getAgentState(self.index)
     myPos = myState.getPosition()
     otherDudePosition = self.get_other_agent_positon(myState, gameState)
     #We could do this for all actions in the tree which would maybe give better results
-    '''
-    list_of_most_probable_locations = []
     for enemy in self.enemy_indexes:
       #Take both of our agents into account
       self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
       if otherDudePosition != 0:
         self.updateNoisyDistanceProbabilities(otherDudePosition, enemy, gameState)
-      list_of_most_probable_locations.append(self.get_most_likely_distance_from_noisy_reading(enemy))
-
-    print(list_of_most_probable_locations)
-    '''
-
-    #self.debugDraw(list_of_most_probable_locations, [1, 0, 0], True)
 
     actions = gameState.getLegalActions(self.index)
 
@@ -342,6 +350,34 @@ class DummyAgent(CaptureAgent):
 
 
   ###Utility functions###
+
+  def find_place_in_grid(self, gameState, location):
+    #we only have half of the board to work with so
+    w = gameState.data.layout.width/2
+    #change the tuple to a list
+    location_to_work_with = list(location)
+    if location not in self.grid_to_work_with:
+      location_copy = location_to_work_with
+      for i in range(1, 3):
+        if self.red:
+          location_copy[0] = location_copy[0] - i
+        else:
+          location_copy[0] = location_copy[0] + i
+        if tuple(location_copy) in self.grid_to_work_with:
+          return tuple(location_copy)
+      for i in range(1, 4):
+        location_copy[1] = location_copy[1] - i
+        if tuple(location_copy) in self.grid_to_work_with:
+          return tuple(location_copy)
+        location_copy[1] = location_copy[1] + i
+        if tuple(location_copy) in self.grid_to_work_with:
+          return tuple(location_copy)
+      #Next one above
+      #Third one below
+      #Then two to left etc etc
+      return (0, 0) #got to figure this edge case out
+    return location
+
   def convert_tuples_to_list(self, tuple):
     l = []
     for i in tuple:
