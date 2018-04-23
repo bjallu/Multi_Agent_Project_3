@@ -157,7 +157,7 @@ class DecisionTreeNode :
       maintain_distance_factor = self.get_maintain_distance_factor(agent_positions[my_index],agent_positions[team_mates_index])
       enemies_are_scared_factor = self.get_enemies_are_scared_factor(my_index)
       score_factor = self.get_score_factor()
-      state_value += (score_factor + enemies_are_scared_factor)r
+      state_value += (score_factor + enemies_are_scared_factor)
     else:
       state_value = self.evalute_state_one_agent_defensive(agent_positions[my_index], my_index, enemy_team, agent_positions[team_mates_index]) + self.evalute_state_one_agent_defensive(agent_positions[team_mates_index],team_mates_index,enemy_team,agent_positions[team_mates_index])
 
