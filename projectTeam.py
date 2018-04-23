@@ -16,7 +16,6 @@ from captureAgents import CaptureAgent
 import random, time, util
 from game import Directions
 import game
-import numpy as np
 
 #################
 # Team creation #
@@ -492,7 +491,7 @@ class DummyAgent(CaptureAgent):
   def get_most_likely_distance_from_noisy_reading(self, enemy):
     index = self.getEnemyListIndex(enemy)
     listCopy = [i[1] for i in self.emission_probabilties_for_each_location_for_each_agent[index]]
-    max_index = np.argmax(listCopy)
+    max_index = listCopy.index(max(listCopy))
     return tuple(self.emission_probabilties_for_each_location_for_each_agent[index][max_index][0])
 
   def updateNoisyDistanceProbabilities(self, mypos, enemy_we_are_checking, gameState):
