@@ -155,8 +155,9 @@ class DecisionTreeNode :
     if self.offensive:
       state_value = self.evaluate_state_one_agent(agent_positions, my_index,enemy_team) + self.evaluate_state_one_agent(agent_positions,team_mates_index,enemy_team)
       maintain_distance_factor = self.get_maintain_distance_factor(agent_positions[my_index],agent_positions[team_mates_index])
+      enemies_are_scared_factor = self.get_enemies_are_scared_factor(my_index)
       score_factor = self.get_score_factor()
-      state_value += score_factor
+      state_value += (score_factor + enemies_are_scared_factor)r
     else:
       state_value = self.evalute_state_one_agent_defensive(agent_positions[my_index], my_index, enemy_team, agent_positions[team_mates_index]) + self.evalute_state_one_agent_defensive(agent_positions[team_mates_index],team_mates_index,enemy_team,agent_positions[team_mates_index])
 
@@ -439,7 +440,7 @@ class DummyAgent(CaptureAgent):
     # or if we are winning
     # i.e. if we kill some1 we go offensive
     # then if we are winning on the scoreboard we go defensive
-    decision_tree = DecisionTree(gameState, self, self.offensive)
+    decision_tree = DecisionTree(gameState, self, True)#self.offensive)
     return decision_tree.get_action()
     #updateNoisyDistanceProbabilities
   ###Utility functions###
