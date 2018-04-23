@@ -48,12 +48,13 @@ def createTeam(firstIndex, secondIndex, isRed,
 class DecisionTree :
   levels = 3
 
-  def __init__(self,game_state,root_agent_object):
+  def __init__(self,game_state,root_agent_object,offensive):
       agent_that_moved_here = (root_agent_object.index + 3) % 4
 
       self.ai_agent = root_agent_object
+      self.offensive = offensive
 
-      self.root_node = DecisionTreeNode(game_state,agent_that_moved_here,root_agent_object)
+      self.root_node = DecisionTreeNode(game_state,agent_that_moved_here,root_agent_object,self.offensive)
 
       self.add_children(self.root_node, 1)
 
@@ -118,17 +119,18 @@ class DecisionTree :
 
 
 class DecisionTreeNode :
-  def __init__(self,game_state,agent_that_moved_here,root_agent_object):
+  def __init__(self,game_state,agent_that_moved_here,root_agent_object,offensive):
     self.node_state = game_state
     self.agent_that_moved_here = agent_that_moved_here #The index of the agent that moved to this state
     self.root_agent_object = root_agent_object
+    self.offensive = offensive
     self.node_score = self.evaluate_state()
     self.propagated_score = 0
     self.children = []
 
 
   def add_child(self,game_state,index):
-    child_node = DecisionTreeNode(game_state,index,self.root_agent_object)
+    child_node = DecisionTreeNode(game_state,index,self.root_agent_object,self.offensive)
     self.children.append(child_node)
 
     return child_node
@@ -150,13 +152,14 @@ class DecisionTreeNode :
     my_index = self.agent_that_moved_here
     team_mates_index = (self.agent_that_moved_here + 2) % 4
 
-    state_value = self.evaluate_state_one_agent(agent_positions[my_index],my_index,enemy_team) + self.evaluate_state_one_agent(agent_positions[team_mates_index],team_mates_index,enemy_team)
+    if self.offensive:
+      state_value = self.evaluate_state_one_agent(agent_positions[my_index], my_index,enemy_team) + self.evaluate_state_one_agent(agent_positions[team_mates_index],team_mates_index,enemy_team)
+      maintain_distance_factor = self.get_maintain_distance_factor(agent_positions[my_index],agent_positions[team_mates_index])
+      score_factor = self.get_score_factor()
+      state_value += score_factor
+    else:
+      state_value = self.evalute_state_one_agent_defensive(agent_positions[my_index], my_index, enemy_team, agent_positions[team_mates_index]) + self.evalute_state_one_agent_defensive(agent_positions[team_mates_index],team_mates_index,enemy_team,agent_positions[team_mates_index])
 
-    maintain_distance_factor = self.get_maintain_distance_factor(agent_positions[my_index],agent_positions[team_mates_index])
-
-    score_factor = self.get_score_factor()
-
-    state_value += score_factor
 
     if (enemy_team): #If not enemy team is moving, then child nodes should have positive state values
       state_value = - state_value
@@ -172,6 +175,24 @@ class DecisionTreeNode :
 
     state_value = distance_to_food_factor + return_with_food_factor #+ food_carried_factor
 
+    return state_value
+
+  def evalute_state_one_agent_defensive(self, agent_position,agent_index,agent_is_on_enemy_team,team_mate_position):
+    distance_to_middle_factor = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, self.root_agent_object.middle)
+    distance_to_upper_half = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, self.root_agent_object.upperHalf)
+    distance_to_lower_half = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, self.root_agent_object.lowerHalf)
+    enemies = [self.node_state.getAgentState(i) for i in CaptureAgent.getOpponents(self.root_agent_object, self.node_state)]
+    invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
+    number_of_invaders = len(invaders)
+    invader_distance = 0
+    if len(invaders) > 0:
+      dists = [CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, a.getPosition()) for a in invaders]
+      invader_distance = min(dists)
+
+    distance_from_each_other = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, team_mate_position)
+
+    state_value = number_of_invaders * (-9999) + invader_distance * (-1000) + distance_to_middle_factor * (-200) + \
+                  distance_to_lower_half*(-50) + distance_to_upper_half*(-50) + distance_from_each_other * (200)
     return state_value
 
   def get_distances_to_food_factor(self,agent_position,enemy_team):
@@ -248,18 +269,6 @@ class DecisionTreeNode :
 
     return min(distances)
 
-  #def get_closest_chokepoint(self):
-  #    features['distanceToMiddle'] = self.getMazeDistance(myPos, self.middle)
-  # try features for the upper and lower half so the agent not in the middle could settle on either one of those points
-  #features['DistanceToUpperHalf'] = self.getMazeDistance(myPos, self.upperHalf)
-  #features['DistanceToLowerHalf'] = self.getMazeDistance(myPos, self.lowerHalf)
-  #    if both_defending:
- #     features['distanceFromEachOther'] = self.getMazeDistance(teamMembersPositions[0], teamMembersPositions[1])
- #   else:
-  #    features['distanceFromEachOther'] = 0
-
-  #def get_num_invaders(self,agent_position, agent_index):
-
 class DummyAgent(CaptureAgent):
   """
   A Dummy agent to serve as an example of the necessary agent structure.
@@ -296,6 +305,7 @@ class DummyAgent(CaptureAgent):
 
     self.enemy_indexes = self.getOpponents(gameState)
     self.team_indexes = self.getTeam(gameState)
+    self.offensive = False
 
     #Map choke points
     self.LayoutHalfWayPoint_Width = gameState.data.layout.width/2
@@ -320,8 +330,10 @@ class DummyAgent(CaptureAgent):
 
   def chooseAction(self, gameState):
     #First update enemy position
+    offensive = self.offensive
     self.update_enemy_possible_locations_depending_on_round(self.enemy_to_update_possible_locations, gameState)
-    kill = self.check_if_we_killed_an_enemy(gameState)
+    if self.check_if_we_killed_an_enemy(gameState):
+      self.offensive = True
     list_of_enemies_in_range = [i for i in self.enemy_indexes if gameState.getAgentState(i).getPosition() != None]
     for i in list_of_enemies_in_range:
       self.reset_agent_probabilties_when_we_know_the_true_position(i, list(gameState.getAgentState(i).getPosition()))
@@ -339,20 +351,18 @@ class DummyAgent(CaptureAgent):
 
     actions = gameState.getLegalActions(self.index)
 
-    decision_tree = DecisionTree(gameState, self)
-
-    time.sleep(0.1)
-    
+    score = self.getScore(gameState)
+    if score > 0:
+      self.offensive = False
+    if myState.isPacman:
+      self.offensive = True
+    # we toggle defensive vs offensive if we killed someone
+    # or if we are winning
+    # i.e. if we kill some1 we go offensive
+    # then if we are winning on the scoreboard we go defensive
+    decision_tree = DecisionTree(gameState, self, self.offensive)
     return decision_tree.get_action()
-
     #updateNoisyDistanceProbabilities
-
-    #a = CaptureAgent.getCurrentObservation(self)
-
-    #a = CaptureAgent.getFood(self,gameState)
-
-    #a = CaptureAgent.getMazeDistance(self, (1, 1), (3, 1))
-
   ###Utility functions###
 
   def find_place_in_grid(self, gameState, location):
@@ -473,6 +483,7 @@ class DummyAgent(CaptureAgent):
     self.list_of_invaders = new_invaderList
     # we killed some one
     if len(new_invaderList) < len(old_invaderList):
+      kill = True
       # get that agent and reset his probabilty pos to the inital position
       enemies_to_reset_locations_for = list(set(old_invaderList) - set(new_invaderList))
       enemy_indexes = self.enemy_indexes
@@ -483,13 +494,12 @@ class DummyAgent(CaptureAgent):
           state = gameState.getAgentState(index)
           for lad in enemies_to_reset_locations_for:
             if state == lad:
-              kill = True
               enemy_indexes_to_reset.append(index_to_store)
       for enemy in enemy_indexes_to_reset:
         initPos = gameState.getInitialAgentPosition(enemy)
         initPos = [initPos[0], initPos[1]]
         self.reset_agent_probabilties_when_we_know_the_true_position(enemy, initPos)
-      return kill
+    return kill
 
   def get_most_likely_distance_from_noisy_reading(self, enemy):
     index = self.getEnemyListIndex(enemy)
