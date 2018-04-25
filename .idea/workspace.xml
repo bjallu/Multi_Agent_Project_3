@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="efc67e93-e4c2-4bf4-962b-2ddf545d5cdf" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/baselineTeam.py" afterPath="$PROJECT_DIR$/baselineTeam.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/projectTeam.py" afterPath="$PROJECT_DIR$/projectTeam.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -79,8 +78,8 @@
       <file leaf-file-name="projectTeam.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/projectTeam.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="322">
-              <caret line="489" column="55" lean-forward="false" selection-start-line="489" selection-start-column="55" selection-end-line="489" selection-end-column="55" />
+            <state relative-caret-position="299">
+              <caret line="633" column="51" lean-forward="false" selection-start-line="633" selection-start-column="51" selection-end-line="633" selection-end-column="51" />
               <folding>
                 <element signature="e#649#687#0" expanded="true" />
               </folding>
@@ -705,8 +704,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/projectTeam.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="322">
-          <caret line="489" column="55" lean-forward="false" selection-start-line="489" selection-start-column="55" selection-end-line="489" selection-end-column="55" />
+        <state relative-caret-position="299">
+          <caret line="633" column="51" lean-forward="false" selection-start-line="633" selection-start-column="51" selection-end-line="633" selection-end-column="51" />
           <folding>
             <element signature="e#649#687#0" expanded="true" />
           </folding>

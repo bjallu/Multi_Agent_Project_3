@@ -474,7 +474,7 @@ class DummyAgent(CaptureAgent):
     for enemy in self.enemy_indexes:
       self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
 
-    kill, list_of_dead_enemies = self.check_if_we_killed_an_enemy(gameState)
+    kill = self.check_if_we_killed_an_enemy(gameState)
     if kill:
       list_index_of_dead_enemies = []
       for i in range(len(old_list_of_pacmen)):
@@ -632,7 +632,6 @@ class DummyAgent(CaptureAgent):
     # we killed some one
     enemies_to_reset_locations_for = []
     if len(new_invaderList) < len(old_invaderList):
-      print('hit')
       kill = True
       enemies_to_reset_locations_for = list(set(old_invaderList) - set(new_invaderList))
     '''  
@@ -654,7 +653,7 @@ class DummyAgent(CaptureAgent):
         print(initPos)
         self.reset_agent_probabilties_when_we_know_the_true_position(enemy, initPos)
         '''
-    return kill, enemies_to_reset_locations_for
+    return kill
 
   def get_most_likely_distance_from_noisy_reading(self, enemy):
     index = self.getEnemyListIndex(enemy)
