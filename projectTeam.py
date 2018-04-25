@@ -147,17 +147,22 @@ class DecisionTreeNode :
       if (self.node_state.data.agentStates[i].configuration != None):
         agent_positions.append(self.node_state.data.agentStates[i].configuration.pos)
       else:
+        #print(i)
         agent_positions.append(self.root_agent_object.get_most_likely_distance_from_noisy_reading(i))
 
     my_index = self.agent_that_moved_here
     team_mates_index = (self.agent_that_moved_here + 2) % 4
 
     if self.offensive:
+
       state_value = self.evaluate_state_one_agent(agent_positions, my_index,enemy_team) + self.evaluate_state_one_agent(agent_positions,team_mates_index,enemy_team)
+      '''
       maintain_distance_factor = self.get_maintain_distance_factor(agent_positions[my_index],agent_positions[team_mates_index])
       enemies_are_scared_factor = self.get_enemies_are_scared_factor(my_index)
       score_factor = self.get_score_factor()
       state_value += (score_factor + enemies_are_scared_factor)# + maintain_distance_factor)
+      '''
+      #state_value = self.evaluate_super_aggresive_agent(agent_positions, my_index,enemy_team) #+ self.evaluate_super_aggresive_agent(agent_positions, my_index,enemy_team)
     else:
       state_value = self.evalute_state_one_agent_defensive(agent_positions[my_index], my_index, enemy_team, agent_positions[team_mates_index]) + self.evalute_state_one_agent_defensive(agent_positions[team_mates_index],team_mates_index,enemy_team,agent_positions[team_mates_index])
 
@@ -202,13 +207,25 @@ class DecisionTreeNode :
     return valid
 
   def evaluate_state_one_agent(self,agent_positions,agent_index,agent_is_on_enemy_team):
+    distance_to_food_factor = self.get_distances_to_food_factor(agent_positions[agent_index], agent_index, agent_is_on_enemy_team)
+
+    return_with_food_factor = self.get_return_with_food_factor(agent_positions[agent_index], agent_index)
+    food = self.get_food_carried_factor(agent_index)
+
+    #distance_to_enemy_ghosts_factor = self.get_distance_to_enemy_ghosts_factor(agent_positions, agent_index)
+
+    state_value = distance_to_food_factor +food#+ return_with_food_factor# + distance_to_enemy_ghosts_factor#+ food_carried_factor
+
+    return state_value
+
+  def evaluate_state_one_agent_2(self,agent_positions,agent_index,agent_is_on_enemy_team):
     distance_to_food_factor = self.get_distances_to_food_factor(agent_positions[agent_index], agent_index,agent_is_on_enemy_team)
 
     return_with_food_factor = self.get_return_with_food_factor(agent_positions[agent_index], agent_index)
 
-    distance_to_enemy_ghosts_factor = self.get_distance_to_enemy_ghosts_factor(agent_positions, agent_index)
+    #distance_to_enemy_ghosts_factor = self.get_distance_to_enemy_ghosts_factor(agent_positions, agent_index)
 
-    state_value = distance_to_food_factor + return_with_food_factor + distance_to_enemy_ghosts_factor#+ food_carried_factor
+    state_value = distance_to_food_factor + return_with_food_factor# + distance_to_enemy_ghosts_factor#+ food_carried_factor
 
     return state_value
 
@@ -295,7 +312,6 @@ class DecisionTreeNode :
     distance_to_food_factor = 1 / distance_to_food_factor
     distance_to_food_factor = distance_to_food_factor * 1
 
-
     return distance_to_food_factor
 
   def get_score_factor(self):
@@ -364,6 +380,21 @@ class DecisionTreeNode :
 
     return min(distances)
 
+  def evaluate_super_aggresive_agent(self,agent_positions,agent_index,agent_is_on_enemy_team):
+ #   foodList = self.getFood(successor).asList()
+#    features['successorScore'] = -len(foodList)  # self.getScore(successor)
+    value = self.get_distances_to_food_factor(agent_positions[agent_index], agent_index, agent_is_on_enemy_team)
+    # Compute distance to the nearest food
+    #rush for power up
+
+    #if len(foodList) > 0:  # This should always be True,  but better safe than sorry
+     # myPos = successor.getAgentState(self.index).getPosition()
+     # minDistance = min([self.getMazeDistance(myPos, food) for food in foodList])
+     # features['distanceToFood'] = minDistance
+    #return features
+    #print(value)
+    return value*10000
+
 class DummyAgent(CaptureAgent):
   """
   A Dummy agent to serve as an example of the necessary agent structure.
@@ -426,12 +457,12 @@ class DummyAgent(CaptureAgent):
   def chooseAction(self, gameState):
     #First update enemy position
     offensive = self.offensive
-    self.update_enemy_possible_locations_depending_on_round(self.enemy_to_update_possible_locations, gameState)
-    if self.check_if_we_killed_an_enemy(gameState):
-      self.offensive = True
-    list_of_enemies_in_range = [i for i in self.enemy_indexes if gameState.getAgentState(i).getPosition() != None]
-    for i in list_of_enemies_in_range:
-      self.reset_agent_probabilties_when_we_know_the_true_position(i, list(gameState.getAgentState(i).getPosition()))
+    draw = []
+    for enemy in self.enemy_indexes:
+    #  draw.append(self.get_most_likely_distance_from_noisy_reading(enemy))
+      self.update_enemy_possible_locations_depending_on_round(enemy, gameState)
+    #self.debugDraw(draw, [1, 1, 0], True)
+
     #Get the position of the other agent at this gameState
     #we could swiss to attack if we kill some1 and then return to defensive stance when we have returned some pellets
     myState = gameState.getAgentState(self.index)
@@ -439,10 +470,13 @@ class DummyAgent(CaptureAgent):
     otherDudePosition = self.get_other_agent_positon(myState, gameState)
     #We could do this for all actions in the tree which would maybe give better results
     for enemy in self.enemy_indexes:
-      #Take both of our agents into account
       self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
-      if otherDudePosition != 0:
-        self.updateNoisyDistanceProbabilities(otherDudePosition, enemy, gameState)
+
+    if self.check_if_we_killed_an_enemy(gameState):
+      self.offensive = True
+    list_of_enemies_in_range = [i for i in self.enemy_indexes if gameState.getAgentState(i).getPosition() != None]
+    for i in list_of_enemies_in_range:
+      self.reset_agent_probabilties_when_we_know_the_true_position(i, list(gameState.getAgentState(i).getPosition()))
 
     actions = gameState.getLegalActions(self.index)
 
@@ -456,7 +490,7 @@ class DummyAgent(CaptureAgent):
     # or if we are winning
     # i.e. if we kill some1 we go offensive
     # then if we are winning on the scoreboard we go defensive
-    decision_tree = DecisionTree(gameState, self, self.offensive)
+    decision_tree = DecisionTree(gameState, self, True)
     return decision_tree.get_action()
     #updateNoisyDistanceProbabilities
   ###Utility functions###
@@ -541,7 +575,11 @@ class DummyAgent(CaptureAgent):
     for move in all_possible_moves:
       for i in self.emission_probabilties_for_each_location_for_each_agent[list_index]:
         if i[0] == move:
-          i[1] = 1/number_of_possible_locations_to_move_to
+          #normalize plus the old probabilty
+          i[1] = 1/number_of_possible_locations_to_move_to + i[1]
+
+    #now we get the previous probabilties and multiply and  maybe add normalize
+
 
   def initialize_probabilty_list(self, gameState):
     list_of_probabilities = []
@@ -579,6 +617,7 @@ class DummyAgent(CaptureAgent):
     self.list_of_invaders = new_invaderList
     # we killed some one
     if len(new_invaderList) < len(old_invaderList):
+      print('hit')
       kill = True
       # get that agent and reset his probabilty pos to the inital position
       enemies_to_reset_locations_for = list(set(old_invaderList) - set(new_invaderList))
@@ -592,6 +631,7 @@ class DummyAgent(CaptureAgent):
             if state == lad:
               enemy_indexes_to_reset.append(index_to_store)
       for enemy in enemy_indexes_to_reset:
+        print(enemy)
         initPos = gameState.getInitialAgentPosition(enemy)
         initPos = [initPos[0], initPos[1]]
         self.reset_agent_probabilties_when_we_know_the_true_position(enemy, initPos)
@@ -600,7 +640,11 @@ class DummyAgent(CaptureAgent):
   def get_most_likely_distance_from_noisy_reading(self, enemy):
     index = self.getEnemyListIndex(enemy)
     listCopy = [i[1] for i in self.emission_probabilties_for_each_location_for_each_agent[index]]
+    #print(index)
+    #print(enemy)
+    #print(listCopy)
     max_index = listCopy.index(max(listCopy))
+    #print(tuple(self.emission_probabilties_for_each_location_for_each_agent[index][max_index][0]))
     return tuple(self.emission_probabilties_for_each_location_for_each_agent[index][max_index][0])
 
   def updateNoisyDistanceProbabilities(self, mypos, enemy_we_are_checking, gameState):

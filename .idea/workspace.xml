@@ -3,7 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="efc67e93-e4c2-4bf4-962b-2ddf545d5cdf" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/group-2.py" afterPath="$PROJECT_DIR$/group-2.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/projectTeam.py" afterPath="$PROJECT_DIR$/projectTeam.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/score" afterPath="$PROJECT_DIR$/score" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -39,8 +40,18 @@
       <file leaf-file-name="myTeam.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/myTeam.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="9177">
-              <caret line="408" column="55" lean-forward="false" selection-start-line="408" selection-start-column="20" selection-end-line="408" selection-end-column="55" />
+            <state relative-caret-position="187">
+              <caret line="360" column="0" lean-forward="false" selection-start-line="360" selection-start-column="0" selection-end-line="360" selection-end-column="56" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="baselineTeam.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/baselineTeam.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="544">
+              <caret line="159" column="55" lean-forward="true" selection-start-line="159" selection-start-column="55" selection-end-line="159" selection-end-column="55" />
               <folding />
             </state>
           </provider>
@@ -69,8 +80,8 @@
       <file leaf-file-name="projectTeam.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/projectTeam.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="23">
-              <caret line="423" column="76" lean-forward="true" selection-start-line="423" selection-start-column="76" selection-end-line="423" selection-end-column="76" />
+            <state relative-caret-position="230">
+              <caret line="461" column="5" lean-forward="false" selection-start-line="461" selection-start-column="5" selection-end-line="461" selection-end-column="5" />
               <folding>
                 <element signature="e#649#687#0" expanded="true" />
               </folding>
@@ -102,15 +113,12 @@
       <find>convert_tuples_to_list</find>
       <find>initial</find>
       <find>enemy_To_update</find>
-      <find>update_enemy_possible_locations_depending_on_round</find>
       <find>GameState</find>
-      <find>draw</find>
       <find>reset_agent_probabil</find>
       <find>updateNoisyDistanceProbabilities</find>
       <find>reset_agent_probabilties_when_we_know_the_true_position</find>
       <find>get_closest_enemy_distance</find>
       <find>getOp</find>
-      <find>get_most_likely_distance_from_noisy_reading</find>
       <find>isPacman</find>
       <find>check_if_we_killed_an_enemy</find>
       <find>get_distances_to_food_factor</find>
@@ -118,7 +126,10 @@
       <find>scared</find>
       <find>offensive</find>
       <find>eval</find>
+      <find>draw</find>
       <find>print</find>
+      <find>get_most_likely_distance_from_noisy_reading</find>
+      <find>update_enemy_possible_locations_depending_on_round</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -133,13 +144,14 @@
         <option value="$PROJECT_DIR$/../../Deep learning/Assignment_1.py" />
         <option value="$PROJECT_DIR$/myTeam.py" />
         <option value="$PROJECT_DIR$/projectTeam_bu_2.py" />
-        <option value="$PROJECT_DIR$/projectTeam.py" />
         <option value="$PROJECT_DIR$/../../Deep learning/Assignment_2.py" />
+        <option value="$PROJECT_DIR$/../pacman-tournament-master/capture.py" />
+        <option value="$PROJECT_DIR$/projectTeam.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="953" />
+    <option name="x" value="-7" />
     <option name="width" value="974" />
     <option name="height" value="1047" />
   </component>
@@ -179,7 +191,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.Assignment_2">
+  <component name="RunManager" selected="Python.capture">
     <configuration name="Assignment_1" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -214,6 +226,23 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
     </configuration>
+    <configuration name="capture (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\bjart\Anaconda3\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../pacman-tournament-master" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="pacman-tournament-master" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../pacman-tournament-master/capture.py" />
+      <option name="PARAMETERS" value="-r  teams/group-2 -b teams/group-4" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
     <configuration name="capture" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -231,16 +260,18 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
     </configuration>
-    <list size="3">
+    <list size="4">
       <item index="0" class="java.lang.String" itemvalue="Python.capture" />
       <item index="1" class="java.lang.String" itemvalue="Python.Assignment_1" />
       <item index="2" class="java.lang.String" itemvalue="Python.Assignment_2" />
+      <item index="3" class="java.lang.String" itemvalue="Python.capture (1)" />
     </list>
     <recent_temporary>
-      <list size="3">
-        <item index="0" class="java.lang.String" itemvalue="Python.Assignment_2" />
-        <item index="1" class="java.lang.String" itemvalue="Python.capture" />
-        <item index="2" class="java.lang.String" itemvalue="Python.Assignment_1" />
+      <list size="4">
+        <item index="0" class="java.lang.String" itemvalue="Python.capture" />
+        <item index="1" class="java.lang.String" itemvalue="Python.capture (1)" />
+        <item index="2" class="java.lang.String" itemvalue="Python.Assignment_2" />
+        <item index="3" class="java.lang.String" itemvalue="Python.Assignment_1" />
       </list>
     </recent_temporary>
   </component>
@@ -311,29 +342,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../Deep learning/Assignment_1_turn_in.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6072">
-          <caret line="264" column="22" lean-forward="true" selection-start-line="264" selection-start-column="22" selection-end-line="264" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Deep learning/Assignment_1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="10" column="48" lean-forward="false" selection-start-line="10" selection-start-column="48" selection-end-line="10" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Deep learning/Assignment_1_turn_in.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/myTeam.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -572,13 +580,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/baselineTeam.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3473">
-          <caret line="156" column="41" lean-forward="false" selection-start-line="156" selection-start-column="33" selection-end-line="156" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ghostAgents.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="184">
@@ -637,14 +638,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/myTeam.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9177">
-          <caret line="408" column="55" lean-forward="false" selection-start-line="408" selection-start-column="20" selection-end-line="408" selection-end-column="55" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/projectTeam_bu_2.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="833">
@@ -671,10 +664,50 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../pacman-tournament-master/teams/group-14.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="544">
+          <caret line="674" column="4" lean-forward="true" selection-start-line="674" selection-start-column="4" selection-end-line="674" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../pacman-tournament-master/teams/group-13.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="552">
+          <caret line="24" column="23" lean-forward="true" selection-start-line="24" selection-start-column="23" selection-end-line="24" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../pacman-tournament-master/capture.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="12" lean-forward="true" selection-start-line="0" selection-start-column="12" selection-end-line="0" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/baselineTeam.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="544">
+          <caret line="159" column="55" lean-forward="true" selection-start-line="159" selection-start-column="55" selection-end-line="159" selection-end-column="55" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myTeam.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="360" column="0" lean-forward="false" selection-start-line="360" selection-start-column="0" selection-end-line="360" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/projectTeam.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="23">
-          <caret line="423" column="76" lean-forward="true" selection-start-line="423" selection-start-column="76" selection-end-line="423" selection-end-column="76" />
+        <state relative-caret-position="230">
+          <caret line="461" column="5" lean-forward="false" selection-start-line="461" selection-start-column="5" selection-end-line="461" selection-end-column="5" />
           <folding>
             <element signature="e#649#687#0" expanded="true" />
           </folding>
