@@ -168,9 +168,18 @@ class DecisionTreeNode :
     return state_value
 
   def evalute_state_one_agent_defensive(self, agent_position,agent_index,agent_is_on_enemy_team,team_mate_position):
-    distance_to_middle_factor = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, self.root_agent_object.middle)
-    distance_to_upper_half = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, self.root_agent_object.upperHalf)
-    distance_to_lower_half = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, self.root_agent_object.lowerHalf)
+    if self.check_if_valid_coordinates(self.root_agent_object.middle):
+      distance_to_middle_factor = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position,self.root_agent_object.middle)
+    else:
+      distance_to_middle_factor = 0
+    if self.check_if_valid_coordinates(self.root_agent_object.upperHalf):
+      distance_to_upper_half = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position,self.root_agent_object.upperHalf)
+    else:
+      distance_to_upper_half = 0
+    if self.check_if_valid_coordinates(self.root_agent_object.lowerHalf):
+      distance_to_lower_half = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, self.root_agent_object.lowerHalf)
+    else:
+      distance_to_lower_half = 0
     enemies = [self.node_state.getAgentState(i) for i in CaptureAgent.getOpponents(self.root_agent_object, self.node_state)]
     invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
     number_of_invaders = len(invaders)
@@ -184,6 +193,13 @@ class DecisionTreeNode :
     state_value = number_of_invaders * (-9999) + invader_distance * (-1000) + distance_to_middle_factor * (-200) + \
                   distance_to_lower_half*(-50) + distance_to_upper_half*(-50) + distance_from_each_other * (200)
     return state_value
+
+  def check_if_valid_coordinates(self, coordinates):
+    valid = False
+    invalid_coordinates = tuple((0, 0))
+    if coordinates != invalid_coordinates:
+      valid = True
+    return valid
 
   def evaluate_state_one_agent(self,agent_positions,agent_index,agent_is_on_enemy_team):
     distance_to_food_factor = self.get_distances_to_food_factor(agent_positions[agent_index], agent_index,agent_is_on_enemy_team)
@@ -452,14 +468,14 @@ class DummyAgent(CaptureAgent):
     location_to_work_with = list(location)
     if location not in self.grid_to_work_with:
       location_copy = location_to_work_with
-      for i in range(1, 3):
+      for i in range(1, 8):
         if self.red:
           location_copy[0] = location_copy[0] - i
         else:
           location_copy[0] = location_copy[0] + i
         if tuple(location_copy) in self.grid_to_work_with:
           return tuple(location_copy)
-      for i in range(1, 4):
+      for i in range(1, 8):
         location_copy[1] = location_copy[1] - i
         if tuple(location_copy) in self.grid_to_work_with:
           return tuple(location_copy)
