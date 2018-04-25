@@ -461,7 +461,7 @@ class DummyAgent(CaptureAgent):
     for enemy in self.enemy_indexes:
       draw.append(self.get_most_likely_distance_from_noisy_reading(enemy))
       self.update_enemy_possible_locations_depending_on_round(enemy, gameState)
-    self.debugDraw(draw, [1, 1, 0], True)
+    self.debugDraw(draw, [1, 0, 1], True)
 
     self.check_if_a_pellet_was_eaten(gameState)
 
@@ -476,7 +476,6 @@ class DummyAgent(CaptureAgent):
     #We could do this for all actions in the tree which would maybe give better results
     for enemy in self.enemy_indexes:
       self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
-
     kill = self.check_if_we_killed_an_enemy(gameState)
     if kill:
       list_index_of_dead_enemies = []
@@ -576,6 +575,8 @@ class DummyAgent(CaptureAgent):
       if candidate in self.grid_to_work_with:
         list_of_possible_coordinates.append(candidate)
     return list_of_possible_coordinates
+
+  #-1,-1
 
   def update_enemy_possible_locations_depending_on_round(self, enemy_to_update, gameState):
     # all legal actions for the enemy depending on possible locations

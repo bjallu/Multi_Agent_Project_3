@@ -218,6 +218,7 @@ class DecisionTreeNode :
     return distance_to_enemy_ghosts_factor
 
   def get_distance_to_agent(self,agent_positions,from_agent,to_agent):
+    # other teams initial positons
     if (agent_positions[from_agent] != (-1,-1) and agent_positions[to_agent] != (-1,-1)):
       return [CaptureAgent.getMazeDistance(self.root_agent_object, agent_positions[from_agent], agent_positions[to_agent]),False]
     distance_vec = self.node_state.getAgentDistances()
@@ -443,11 +444,12 @@ class DummyAgent(CaptureAgent):
     CaptureAgent.registerInitialState(self, gameState)
     #Map without walls
     self.grid_to_work_with = []
+    self.pellet_grid_to_work_with = []
     for x in range(gameState.data.layout.width):
       for y in range(gameState.data.layout.height):
         if not gameState.hasWall(x, y):
           self.grid_to_work_with.append((x, y))
-
+       # if gameState.has
     self.enemy_indexes = self.getOpponents(gameState)
     self.team_indexes = self.getTeam(gameState)
 
@@ -476,9 +478,13 @@ class DummyAgent(CaptureAgent):
   def chooseAction(self, gameState):
     draw = []
     for enemy in self.enemy_indexes:
-      draw.append(self.get_most_likely_distance_from_noisy_reading(enemy))
       self.update_enemy_possible_locations_depending_on_round(enemy, gameState)
-    self.debugDraw(draw, [1, 1, 0], True)
+      self.initialize_probability_list_for_a_enemy_if_all_odds_are_zero(enemy, gameState)
+      draw.append(self.get_most_likely_distance_from_noisy_reading(enemy))
+    if(self.index>1):
+      self.debugDraw(draw, [1, 1, 0], True)
+    else:
+      self.debugDraw(draw, [0, 0, 1], True)
 
     old_list_of_pacmen = self.list_of_enemy_pacmen
     new_list_of_enemies_that_are_pacmen = [gameState.getAgentState(enemy).isPacman for enemy in self.enemy_indexes]
@@ -496,10 +502,8 @@ class DummyAgent(CaptureAgent):
       for i in range(len(old_list_of_pacmen)):
         if old_list_of_pacmen[i] == True and new_list_of_enemies_that_are_pacmen[i] == False:
           enemy_index = self.enemy_indexes[i]
-          self.reset_agent_probabilties_when_we_know_the_true_position(enemy_index, list(
-            gameState.getInitialAgentPosition(enemy_index)))
-    if kill:
-      self.offensive = True
+          self.reset_agent_probabilties_when_we_know_the_true_position(enemy_index, list(gameState.getInitialAgentPosition(enemy_index)))
+
     list_of_enemies_in_range = [i for i in self.enemy_indexes if gameState.getAgentState(i).getPosition() != None]
     for i in list_of_enemies_in_range:
       self.reset_agent_probabilties_when_we_know_the_true_position(i, list(gameState.getAgentState(i).getPosition()))
@@ -617,6 +621,20 @@ class DummyAgent(CaptureAgent):
       list_of_probabilities[agent_list_index][starting_location_index][1] = 1.0
     return list_of_probabilities
 
+  def initialize_probability_list_for_a_enemy_if_all_odds_are_zero(self, enemy, gameState):
+      index = self.getEnemyListIndex(enemy)
+      listCopy = [i[1] for i in self.emission_probabilties_for_each_location_for_each_agent[index]]
+      if all(i <= 0 for i in listCopy):
+        initPos = list(gameState.getInitialAgentPosition(enemy))
+        initPos = [initPos, 0.0]
+        starting_location_index = self.emission_probabilties_for_each_location_for_each_agent[index].index(initPos)
+        print(starting_location_index)
+        self.emission_probabilties_for_each_location_for_each_agent[index][starting_location_index][1] = 1.0
+        #todo need to set all other odds to zero
+        for i in range(len(self.emission_probabilties_for_each_location_for_each_agent[index])):
+          if i != starting_location_index:
+            self.emission_probabilties_for_each_location_for_each_agent[index][i][1] = 0.0
+
   def reset_agent_probabilties_when_we_know_the_true_position(self, enemy, true_position):
       index = self.getEnemyListIndex(enemy)
       listCopy = [i[0] for i in self.emission_probabilties_for_each_location_for_each_agent[index]]
@@ -640,6 +658,8 @@ class DummyAgent(CaptureAgent):
       kill = True
       enemies_to_reset_locations_for = list(set(old_invaderList) - set(new_invaderList))
     return kill
+
+  #def check_initial_positon_odds(self, enemy):
 
   def check_if_a_pellet_was_eaten(self, gameState):
     food = self.getFoodYouAreDefending(gameState)

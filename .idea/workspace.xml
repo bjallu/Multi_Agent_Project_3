@@ -5,6 +5,7 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/projectTeam-bu.py" afterPath="$PROJECT_DIR$/projectTeam-bu.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/projectTeam.py" afterPath="$PROJECT_DIR$/projectTeam.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/score" afterPath="$PROJECT_DIR$/score" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -12,6 +13,26 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DockManager">
+    <window id="1">
+      <content type="file-editors">
+        <state>
+          <leaf>
+            <file leaf-file-name="projectTeam-bu.py" pinned="false" current-in-tab="true">
+              <entry file="file://$PROJECT_DIR$/projectTeam-bu.py">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state relative-caret-position="431">
+                    <caret line="629" column="115" lean-forward="false" selection-start-line="629" selection-start-column="115" selection-end-line="629" selection-end-column="115" />
+                    <folding />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+          </leaf>
+        </state>
+      </content>
+    </window>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
@@ -31,57 +52,17 @@
         <entry file="file://$PROJECT_DIR$/../../Deep learning/Assignment_1_turn_in.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="299">
-              <caret line="85" column="33" lean-forward="false" selection-start-line="85" selection-start-column="20" selection-end-line="85" selection-end-column="33" />
+              <caret line="16" column="19" lean-forward="true" selection-start-line="16" selection-start-column="19" selection-end-line="16" selection-end-column="19" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="myTeam.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/myTeam.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="360" column="0" lean-forward="false" selection-start-line="360" selection-start-column="0" selection-end-line="360" selection-end-column="56" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="baselineTeam.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/baselineTeam.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="199">
-              <caret line="34" column="77" lean-forward="false" selection-start-line="34" selection-start-column="77" selection-end-line="34" selection-end-column="77" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="captureAgents.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/captureAgents.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="322">
-              <caret line="100" column="32" lean-forward="false" selection-start-line="100" selection-start-column="32" selection-end-line="100" selection-end-column="32" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="capture.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/capture.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="138">
-              <caret line="241" column="7" lean-forward="true" selection-start-line="241" selection-start-column="7" selection-end-line="241" selection-end-column="7" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="projectTeam.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="projectTeam.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/projectTeam.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="276">
-              <caret line="145" column="0" lean-forward="false" selection-start-line="145" selection-start-column="0" selection-end-line="149" selection-end-column="101" />
+            <state relative-caret-position="23">
+              <caret line="447" column="45" lean-forward="true" selection-start-line="447" selection-start-column="45" selection-end-line="447" selection-end-column="45" />
               <folding>
                 <element signature="e#649#687#0" expanded="true" />
               </folding>
@@ -89,11 +70,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="projectTeam-bu.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/projectTeam-bu.py">
+      <file leaf-file-name="capture.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/capture.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="224" column="0" lean-forward="true" selection-start-line="224" selection-start-column="0" selection-end-line="224" selection-end-column="0" />
+            <state relative-caret-position="23">
+              <caret line="710" column="9" lean-forward="true" selection-start-line="710" selection-start-column="9" selection-end-line="710" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -110,9 +91,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>AgentState</find>
-      <find>pre_bonus_training</find>
-      <find>rules</find>
       <find>getInitialAgentPosition</find>
       <find>emission_probabilties_for_each_location_for_each_agent</find>
       <find>convert_tuples_to_list</find>
@@ -130,9 +108,7 @@
       <find>offensive</find>
       <find>eval</find>
       <find>print</find>
-      <find>get_most_likely_distance_from_noisy_reading</find>
       <find>update_enemy_possible_locations_depending_on_round</find>
-      <find>draw</find>
       <find>check_if_we_killed_an_enemy</find>
       <find>isPacman</find>
       <find>check_i</find>
@@ -140,6 +116,11 @@
       <find>getAgentDistances</find>
       <find>get_distance_to_agent</find>
       <find>agent_positions</find>
+      <find>draw</find>
+      <find>enemy_to_update_possible_locations</find>
+      <find>get_most_likely_distance_from_noisy_reading</find>
+      <find>self.enemy_index</find>
+      <find>initialize_probability_list_for_a_enemy_if_all_odds_are_zero</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -161,7 +142,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds">
     <option name="x" value="-7" />
     <option name="width" value="974" />
     <option name="height" value="1047" />
@@ -267,7 +248,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="pacman-tournament-master" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/capture.py" />
-      <option name="PARAMETERS" value="-r  projectTeam-bu -b baselineTeam" />
+      <option name="PARAMETERS" value="-r  projectTeam-bu  -b baselineTeam" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
     </configuration>
@@ -300,13 +281,13 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-7" y="0" width="974" height="1047" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.12447917" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32343584" sideWeight="0.14947917" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32343584" sideWeight="0.85052085" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32655245" sideWeight="0.15240084" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32655245" sideWeight="0.84759915" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -634,14 +615,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../Deep learning/Assignment_1_turn_in.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="85" column="33" lean-forward="false" selection-start-line="85" selection-start-column="20" selection-end-line="85" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../Deep learning/Assignment_2.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="213">
@@ -676,10 +649,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/capture.py">
+    <entry file="file://$PROJECT_DIR$/myTeam.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="138">
-          <caret line="241" column="7" lean-forward="true" selection-start-line="241" selection-start-column="7" selection-end-line="241" selection-end-column="7" />
+        <state relative-caret-position="187">
+          <caret line="360" column="0" lean-forward="false" selection-start-line="360" selection-start-column="0" selection-end-line="360" selection-end-column="56" />
           <folding />
         </state>
       </provider>
@@ -692,14 +665,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/myTeam.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="360" column="0" lean-forward="false" selection-start-line="360" selection-start-column="0" selection-end-line="360" selection-end-column="56" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/baselineTeam.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="199">
@@ -708,10 +673,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../../Deep learning/Assignment_1_turn_in.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="16" column="19" lean-forward="true" selection-start-line="16" selection-start-column="19" selection-end-line="16" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/capture.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="23">
+          <caret line="710" column="9" lean-forward="true" selection-start-line="710" selection-start-column="9" selection-end-line="710" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/projectTeam.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="276">
-          <caret line="145" column="0" lean-forward="false" selection-start-line="145" selection-start-column="0" selection-end-line="149" selection-end-column="101" />
+        <state relative-caret-position="23">
+          <caret line="447" column="45" lean-forward="true" selection-start-line="447" selection-start-column="45" selection-end-line="447" selection-end-column="45" />
           <folding>
             <element signature="e#649#687#0" expanded="true" />
           </folding>
@@ -720,8 +701,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/projectTeam-bu.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="224" column="0" lean-forward="true" selection-start-line="224" selection-start-column="0" selection-end-line="224" selection-end-column="0" />
+        <state relative-caret-position="431">
+          <caret line="629" column="115" lean-forward="false" selection-start-line="629" selection-start-column="115" selection-end-line="629" selection-end-column="115" />
           <folding />
         </state>
       </provider>
