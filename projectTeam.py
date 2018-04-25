@@ -459,9 +459,9 @@ class DummyAgent(CaptureAgent):
     offensive = self.offensive
     draw = []
     for enemy in self.enemy_indexes:
-    #  draw.append(self.get_most_likely_distance_from_noisy_reading(enemy))
+      draw.append(self.get_most_likely_distance_from_noisy_reading(enemy))
       self.update_enemy_possible_locations_depending_on_round(enemy, gameState)
-    #self.debugDraw(draw, [1, 1, 0], True)
+    self.debugDraw(draw, [1, 1, 0], True)
 
     #Get the position of the other agent at this gameState
     #we could swiss to attack if we kill some1 and then return to defensive stance when we have returned some pellets
@@ -640,11 +640,7 @@ class DummyAgent(CaptureAgent):
   def get_most_likely_distance_from_noisy_reading(self, enemy):
     index = self.getEnemyListIndex(enemy)
     listCopy = [i[1] for i in self.emission_probabilties_for_each_location_for_each_agent[index]]
-    #print(index)
-    #print(enemy)
-    #print(listCopy)
     max_index = listCopy.index(max(listCopy))
-    #print(tuple(self.emission_probabilties_for_each_location_for_each_agent[index][max_index][0]))
     return tuple(self.emission_probabilties_for_each_location_for_each_agent[index][max_index][0])
 
   def updateNoisyDistanceProbabilities(self, mypos, enemy_we_are_checking, gameState):
@@ -657,6 +653,9 @@ class DummyAgent(CaptureAgent):
       the_coordinates = tuple(i[0])
       distance = util.manhattanDistance(mypos, the_coordinates)
       location_probabilty = gameState.getDistanceProb(distance, distance_to_enemy)
-      updated_probabilties_for_each_location = i[1] * location_probabilty
+      if distance <= 5:
+        updated_probabilties_for_each_location = 0.
+      else:
+        updated_probabilties_for_each_location = i[1] * location_probabilty
       self.emission_probabilties_for_each_location_for_each_agent[index][counter][1] = updated_probabilties_for_each_location
       counter += 1
