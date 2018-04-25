@@ -48,13 +48,12 @@ def createTeam(firstIndex, secondIndex, isRed,
 class DecisionTree :
   levels = 3
 
-  def __init__(self,game_state,root_agent_object,offensive):
+  def __init__(self,game_state,root_agent_object):
       agent_that_moved_here = (root_agent_object.index + 3) % 4
 
       self.ai_agent = root_agent_object
-      self.offensive = offensive
 
-      self.root_node = DecisionTreeNode(game_state,agent_that_moved_here,root_agent_object,self.offensive)
+      self.root_node = DecisionTreeNode(game_state,agent_that_moved_here,root_agent_object)
 
       self.add_children(self.root_node, 1)
 
@@ -75,7 +74,7 @@ class DecisionTree :
     for i in range(len(future_states)):
       next_node = tree_node.add_child(future_states[i], agent_to_move)
 
-      self.add_children(next_node, level + 1)
+      self.add_children(next_node,level + 1)
 
 
   def get_action(self):
@@ -119,23 +118,25 @@ class DecisionTree :
 
 
 class DecisionTreeNode :
-  def __init__(self,game_state,agent_that_moved_here,root_agent_object,offensive):
+  def __init__(self,game_state,agent_that_moved_here,root_agent_object):
     self.node_state = game_state
     self.agent_that_moved_here = agent_that_moved_here #The index of the agent that moved to this state
     self.root_agent_object = root_agent_object
-    self.offensive = offensive
     self.node_score = self.evaluate_state()
     self.propagated_score = 0
     self.children = []
 
 
   def add_child(self,game_state,index):
-    child_node = DecisionTreeNode(game_state,index,self.root_agent_object,self.offensive)
+    child_node = DecisionTreeNode(game_state,index,self.root_agent_object)
     self.children.append(child_node)
 
     return child_node
 
   def evaluate_state(self):
+    if (self.node_state.data.agentStates[self.agent_that_moved_here].configuration == None):
+      return 0 # If we don't have the position of agent_that_moved_here, then we cannot say anything about the state
+
     if (self.agent_that_moved_here == self.root_agent_object.index or (self.agent_that_moved_here + 2) % 4 == self.root_agent_object.index):
       enemy_team = False
     else:
@@ -147,88 +148,50 @@ class DecisionTreeNode :
       if (self.node_state.data.agentStates[i].configuration != None):
         agent_positions.append(self.node_state.data.agentStates[i].configuration.pos)
       else:
+        #agent_positions.append(self.root_agent_object.get_most_likely_distance_from_noisy_reading(i))
         agent_positions.append(self.root_agent_object.get_most_likely_distance_from_noisy_reading(i))
 
     my_index = self.agent_that_moved_here
     team_mates_index = (self.agent_that_moved_here + 2) % 4
 
-    if self.offensive:
-      state_value = self.evaluate_state_one_agent(agent_positions, my_index,enemy_team) + self.evaluate_state_one_agent(agent_positions,team_mates_index,enemy_team)
-      maintain_distance_factor = self.get_maintain_distance_factor(agent_positions[my_index],agent_positions[team_mates_index])
-      enemies_are_scared_factor = self.get_enemies_are_scared_factor(my_index)
-      score_factor = self.get_score_factor()
-      state_value += (score_factor + enemies_are_scared_factor)# + maintain_distance_factor)
-      #state_value = self.evaluate_super_aggresive_agent(agent_positions, my_index,enemy_team) #+ self.evaluate_super_aggresive_agent(agent_positions, my_index,enemy_team)
-    else:
-      state_value = self.evalute_state_one_agent_defensive(agent_positions[my_index], my_index, enemy_team, agent_positions[team_mates_index]) + self.evalute_state_one_agent_defensive(agent_positions[team_mates_index],team_mates_index,enemy_team,agent_positions[team_mates_index])
+    state_value = self.evaluate_state_one_agent(agent_positions,my_index,enemy_team) + self.evaluate_state_one_agent(agent_positions,team_mates_index,enemy_team)
 
+    #maintain_distance_factor = self.get_maintain_distance_factor(agent_positions[my_index],agent_positions[team_mates_index])
+
+    capsules_eaten_factor = self.get_capsule_eat_factor(my_index)
+
+    enemy_food_carrying_factor = self.get_enemy_food_carried_factor(my_index)
+
+    score_factor = self.get_score_factor()
+
+    state_value = state_value + score_factor + capsules_eaten_factor + enemy_food_carrying_factor
 
     if (enemy_team): #If not enemy team is moving, then child nodes should have positive state values
       state_value = - state_value
 
     return state_value
 
-  def evalute_state_one_agent_defensive(self, agent_position,agent_index,agent_is_on_enemy_team,team_mate_position):
-    if self.check_if_valid_coordinates(self.root_agent_object.middle):
-      distance_to_middle_factor = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position,self.root_agent_object.middle)
-    else:
-      distance_to_middle_factor = 0
-    if self.check_if_valid_coordinates(self.root_agent_object.upperHalf):
-      distance_to_upper_half = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position,self.root_agent_object.upperHalf)
-    else:
-      distance_to_upper_half = 0
-    if self.check_if_valid_coordinates(self.root_agent_object.lowerHalf):
-      distance_to_lower_half = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, self.root_agent_object.lowerHalf)
-    else:
-      distance_to_lower_half = 0
-    enemies = [self.node_state.getAgentState(i) for i in CaptureAgent.getOpponents(self.root_agent_object, self.node_state)]
-    invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
-    number_of_invaders = len(invaders)
-    invader_distance = 0
-    if len(invaders) > 0:
-      dists = [CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, a.getPosition()) for a in invaders]
-      invader_distance = min(dists)
-
-    distance_from_each_other = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, team_mate_position)
-
-    state_value = number_of_invaders * (-9999) + invader_distance * (-1000) + distance_to_middle_factor * (-200) + \
-                  distance_to_lower_half*(-50) + distance_to_upper_half*(-50) + distance_from_each_other * (200)
-    return state_value
-
-  def check_if_valid_coordinates(self, coordinates):
-    valid = False
-    invalid_coordinates = tuple((0, 0))
-    if coordinates != invalid_coordinates:
-      valid = True
-    return valid
-
   def evaluate_state_one_agent(self,agent_positions,agent_index,agent_is_on_enemy_team):
-    distance_to_food_factor = self.get_distances_to_food_factor(agent_positions[agent_index], agent_index, agent_is_on_enemy_team)
+    if agent_positions[agent_index] == (-1,-1):
+      return 0
 
-    return_with_food_factor = self.get_return_with_food_factor(agent_positions[agent_index], agent_index)
-    #food = self.get_food_carried_factor(agent_index)
-
-    distance_to_enemy_ghosts_factor = self.get_distance_to_enemy_ghosts_factor(agent_positions, agent_index)
-
-    state_value = distance_to_food_factor + return_with_food_factor + distance_to_enemy_ghosts_factor#+ food_carried_factor
-
-    return state_value
-
-  def evaluate_state_one_agent_2(self,agent_positions,agent_index,agent_is_on_enemy_team):
     distance_to_food_factor = self.get_distances_to_food_factor(agent_positions[agent_index], agent_index,agent_is_on_enemy_team)
 
     return_with_food_factor = self.get_return_with_food_factor(agent_positions[agent_index], agent_index)
 
-    #distance_to_enemy_ghosts_factor = self.get_distance_to_enemy_ghosts_factor(agent_positions, agent_index)
+    distance_to_enemy_ghosts_factor = self.get_distance_to_enemy_ghosts_factor(agent_positions, agent_index)
 
-    state_value = distance_to_food_factor + return_with_food_factor# + distance_to_enemy_ghosts_factor#+ food_carried_factor
+    kill_enemy_agent_factor = self.kill_enemy_agent_factor(agent_positions,agent_index)
+
+    state_value = distance_to_food_factor + return_with_food_factor + distance_to_enemy_ghosts_factor + kill_enemy_agent_factor#+ food_carried_factor
+
+   # deb = self.get_distance_to_enemy_ghosts_factor(agent_positions,agent_index)
 
     return state_value
 
   def get_distance_to_enemy_ghosts_factor(self,agent_positions,agent_index):
     #return 0
-    enemy_agent_index_1 = (agent_index + 1) % 4
-    enemy_agent_index_2 = (agent_index + 3) % 4
+    [enemy_agent_index_1, enemy_agent_index_2] = self.get_enemy_indices(agent_index)
 
     i_am_ghost = self.is_ghost(agent_index)
     enemy_1_is_ghost = self.is_ghost(enemy_agent_index_1)
@@ -237,11 +200,11 @@ class DecisionTreeNode :
     if i_am_ghost or (not enemy_1_is_ghost and not enemy_2_is_ghost):
       return 0
 
-    distance_enemy_1 = CaptureAgent.getMazeDistance(self.root_agent_object, agent_positions[agent_index], agent_positions[enemy_agent_index_1])
-    distance_enemy_2 = CaptureAgent.getMazeDistance(self.root_agent_object, agent_positions[agent_index], agent_positions[enemy_agent_index_2])
+    distance_enemy_1 = self.get_distance_to_agent(agent_positions,agent_index,enemy_agent_index_1)[0]
+    distance_enemy_2 = self.get_distance_to_agent(agent_positions,agent_index,enemy_agent_index_2)[0]
 
     if enemy_1_is_ghost and enemy_2_is_ghost:
-      distance = (distance_enemy_1 + distance_enemy_2) / 2
+      distance = min(distance_enemy_1,distance_enemy_2)
     elif enemy_1_is_ghost:
       distance = distance_enemy_1
     else:
@@ -250,11 +213,16 @@ class DecisionTreeNode :
     if distance > 3:
       return 0
 
-    if distance == 0:
-      distance = 1
-    distane_to_enemy_ghosts_factor = (-1 / distance) * 5
+    distance_to_enemy_ghosts_factor = (-1 / (distance + 0.1)) * 100
 
-    return distane_to_enemy_ghosts_factor
+    return distance_to_enemy_ghosts_factor
+
+  def get_distance_to_agent(self,agent_positions,from_agent,to_agent):
+    # other teams initial positons
+    if (agent_positions[from_agent] != (-1,-1) and agent_positions[to_agent] != (-1,-1)):
+      return [CaptureAgent.getMazeDistance(self.root_agent_object, agent_positions[from_agent], agent_positions[to_agent]),False]
+    distance_vec = self.node_state.getAgentDistances()
+    return [distance_vec[to_agent],True]
 
   def is_ghost(self,agent_index):
     is_ghost = True
@@ -294,7 +262,7 @@ class DecisionTreeNode :
 
     for i in range(0,food.width):
       for j in range(0,food.height):
-        if food.data[i][j] or our_capsule == (i,j):
+        if food.data[i][j] :#or our_capsule == (i,j):
           distance = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, (i,j))
           distances.append(distance)
 
@@ -302,11 +270,10 @@ class DecisionTreeNode :
 
     #distance_to_food_factor = sum(distances) / float(len(distances))
     distance_to_food_factor = min(distances)
-    if (distance_to_food_factor == 0):
-      distance_to_food_factor = 1
 
-    distance_to_food_factor = 1 / distance_to_food_factor
+    distance_to_food_factor = 1 / (distance_to_food_factor + 0.1)
     distance_to_food_factor = distance_to_food_factor * 1
+
 
     return distance_to_food_factor
 
@@ -315,29 +282,92 @@ class DecisionTreeNode :
 
     return 10000 * score_diff
 
-  def get_food_carried_factor(self,agent_index):
-    food_carrying = self.node_state.data.agentStates[agent_index].numCarrying
+  def get_enemy_food_carried_factor(self,agent_index):
+    [enemy_agent_index_1, enemy_agent_index_2] = self.get_enemy_indices(agent_index)
 
-    return 1000 * food_carrying
+    food_carrying = self.node_state.data.agentStates[enemy_agent_index_1].numCarrying + self.node_state.data.agentStates[enemy_agent_index_2].numCarrying
 
+    return -1000 * food_carrying
 
-  def get_maintain_distance_factor(self,agent_position_1,agent_position_2):
-    distance_between = CaptureAgent.getMazeDistance(self.root_agent_object,agent_position_1,agent_position_2)
+  def kill_enemy_agent_factor(self,agent_positions,agent_index):
+    [enemy_agent_index_1, enemy_agent_index_2] = self.get_enemy_indices(agent_index)
 
-    return distance_between/300
+    food_enemy_1 = self.node_state.data.agentStates[enemy_agent_index_1].numCarrying
+    food_enemy_2 = self.node_state.data.agentStates[enemy_agent_index_2].numCarrying
 
-  def get_enemies_are_scared_factor(self,agent_index):
-    enemy_agent_index_1 = (agent_index + 1) % 4
-    enemy_agent_index_2 = (agent_index + 3) % 4
+    if (food_enemy_1 == 0 and food_enemy_2 == 0):
+      return 0
 
-    ret_val = 0
+    if self.node_state.data.agentStates[agent_index].scaredTimer > 0:
+      return 0
 
-    if self.node_state.data.agentStates[enemy_agent_index_1].scaredTimer > 0:
-      ret_val += 10
-    if self.node_state.data.agentStates[enemy_agent_index_2].scaredTimer > 0:
-      ret_val += 10
+    if (food_enemy_1 > food_enemy_2):
+      target_enemy = enemy_agent_index_1
+      food_enemy = food_enemy_1
+    else:
+      target_enemy = enemy_agent_index_2
+      food_enemy = food_enemy_2
 
-    return ret_val
+    [distance_enemy, noisy] = self.get_distance_to_agent(agent_positions,agent_index,target_enemy)
+
+    we_are_blue_team = agent_index % 2
+    if we_are_blue_team:
+      #center_of_our_half_pos = (3 * self.node_state.data.layout.width/4,self.node_state.data.layout.height/2)
+
+      if (agent_index < 2):
+        goal_agent = (3 * self.node_state.data.layout.width/4,self.node_state.data.layout.height/4)
+      else:
+        goal_agent = (3 * self.node_state.data.layout.width / 4, 3 * self.node_state.data.layout.height / 4)
+    else:
+      #center_of_our_half_pos = (self.node_state.data.layout.width / 4, self.node_state.data.layout.height / 2)
+
+      if (agent_index < 2):
+        goal_agent = (self.node_state.data.layout.width / 4, self.node_state.data.layout.height / 4)
+      else:
+        goal_agent = (self.node_state.data.layout.width / 4, 3 * self.node_state.data.layout.height / 4)
+
+    goal_agent = self.get_closest_non_wall_position(goal_agent)
+
+    if (noisy):
+      distance_enemy = CaptureAgent.getMazeDistance(self.root_agent_object,agent_positions[agent_index],goal_agent)
+
+    factor = food_enemy / (distance_enemy + 0.1)
+    factor = factor * 100
+
+    return factor
+
+  def get_closest_non_wall_position(self,position):
+    position = (int(position[0]),int(position[1]))
+
+    if not self.node_state.data.layout.walls.data[position[0]][position[1]]:
+      return position
+
+    for i in range(-1,1):
+      for j in range(-1,1):
+        position_cur = (position[0] + i, position[1] + j)
+
+        if (position_cur[0] < 0 or position_cur[1] < 0 or position_cur[0] >= self.node_state.data.layout.width or position_cur[1] >= self.node_state.data.layout.height):
+          continue
+
+        if not self.node_state.data.layout.walls.data[position_cur[0]][position_cur[1]]:
+          return position_cur
+
+  def get_capsule_eat_factor(self,agent_index):
+    team_mate_index = (agent_index + 2) % 4
+
+    #factor = self.node_state.data.agentStates[agent_index].
+
+    return 0
+
+  def get_enemy_indices(self,agent_index):
+    enemy_index_1 = (agent_index + 1) % 4
+    enemy_index_2 = (agent_index + 3) % 4
+
+    if enemy_index_1 < enemy_index_2:
+      return [enemy_index_1,enemy_index_2]
+    else:
+      return [enemy_index_2,enemy_index_1]
+
 
 
   def get_return_with_food_factor(self,agent_position,agent_index):
@@ -348,10 +378,7 @@ class DecisionTreeNode :
 
     distance_home = self.get_closest_distance_to_home(agent_position,agent_index)
 
-    if distance_home == 0:
-      distance_home = 1
-
-    return_with_food_factor = (1 / distance_home) * food_carrying * 100
+    return_with_food_factor = (1 / (distance_home + 0.1)) * food_carrying * 100
 
     return return_with_food_factor
 
@@ -376,20 +403,17 @@ class DecisionTreeNode :
 
     return min(distances)
 
-  def evaluate_super_aggresive_agent(self,agent_positions,agent_index,agent_is_on_enemy_team):
- #   foodList = self.getFood(successor).asList()
-#    features['successorScore'] = -len(foodList)  # self.getScore(successor)
-    value = self.get_distances_to_food_factor(agent_positions[agent_index], agent_index, agent_is_on_enemy_team)
-    # Compute distance to the nearest food
-    #rush for power up
+  #def get_closest_chokepoint(self):
+  #    features['distanceToMiddle'] = self.getMazeDistance(myPos, self.middle)
+  # try features for the upper and lower half so the agent not in the middle could settle on either one of those points
+  #features['DistanceToUpperHalf'] = self.getMazeDistance(myPos, self.upperHalf)
+  #features['DistanceToLowerHalf'] = self.getMazeDistance(myPos, self.lowerHalf)
+  #    if both_defending:
+ #     features['distanceFromEachOther'] = self.getMazeDistance(teamMembersPositions[0], teamMembersPositions[1])
+ #   else:
+  #    features['distanceFromEachOther'] = 0
 
-    #if len(foodList) > 0:  # This should always be True,  but better safe than sorry
-     # myPos = successor.getAgentState(self.index).getPosition()
-     # minDistance = min([self.getMazeDistance(myPos, food) for food in foodList])
-     # features['distanceToFood'] = minDistance
-    #return features
-    #print(value)
-    return value*10000
+  #def get_num_invaders(self,agent_position, agent_index):
 
 class DummyAgent(CaptureAgent):
   """
@@ -418,19 +442,16 @@ class DummyAgent(CaptureAgent):
     CaptureAgent.registerInitialState in captureAgents.py.
     '''
     CaptureAgent.registerInitialState(self, gameState)
-
-    #grid that contains our food location
-
     #Map without walls
     self.grid_to_work_with = []
+    self.pellet_grid_to_work_with = []
     for x in range(gameState.data.layout.width):
       for y in range(gameState.data.layout.height):
         if not gameState.hasWall(x, y):
           self.grid_to_work_with.append((x, y))
-
+       # if gameState.has
     self.enemy_indexes = self.getOpponents(gameState)
     self.team_indexes = self.getTeam(gameState)
-    self.offensive = False
 
     #Map choke points
     self.LayoutHalfWayPoint_Width = gameState.data.layout.width/2
@@ -455,27 +476,26 @@ class DummyAgent(CaptureAgent):
     self.emission_probabilties_for_each_location_for_each_agent = self.initialize_probabilty_list(gameState)
 
   def chooseAction(self, gameState):
-    #First update enemy position
-    offensive = self.offensive
     draw = []
     for enemy in self.enemy_indexes:
-      draw.append(self.get_most_likely_distance_from_noisy_reading(enemy))
       self.update_enemy_possible_locations_depending_on_round(enemy, gameState)
-    self.debugDraw(draw, [1, 0, 1], True)
-
-    self.check_if_a_pellet_was_eaten(gameState)
+      self.initialize_probability_list_for_a_enemy_if_all_odds_are_zero(enemy, gameState)
+      draw.append(self.get_most_likely_distance_from_noisy_reading(enemy))
+    if(self.index>1):
+      self.debugDraw(draw, [1, 1, 0], True)
+    else:
+      self.debugDraw(draw, [0, 0, 1], True)
 
     old_list_of_pacmen = self.list_of_enemy_pacmen
     new_list_of_enemies_that_are_pacmen = [gameState.getAgentState(enemy).isPacman for enemy in self.enemy_indexes]
 
-    #Get the position of the other agent at this gameState
-    #we could swiss to attack if we kill some1 and then return to defensive stance when we have returned some pellets
     myState = gameState.getAgentState(self.index)
     myPos = myState.getPosition()
     otherDudePosition = self.get_other_agent_positon(myState, gameState)
-    #We could do this for all actions in the tree which would maybe give better results
+    # We could do this for all actions in the tree which would maybe give better results
     for enemy in self.enemy_indexes:
       self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
+
     kill = self.check_if_we_killed_an_enemy(gameState)
     if kill:
       list_index_of_dead_enemies = []
@@ -483,8 +503,7 @@ class DummyAgent(CaptureAgent):
         if old_list_of_pacmen[i] == True and new_list_of_enemies_that_are_pacmen[i] == False:
           enemy_index = self.enemy_indexes[i]
           self.reset_agent_probabilties_when_we_know_the_true_position(enemy_index, list(gameState.getInitialAgentPosition(enemy_index)))
-    if kill:
-      self.offensive = True
+
     list_of_enemies_in_range = [i for i in self.enemy_indexes if gameState.getAgentState(i).getPosition() != None]
     for i in list_of_enemies_in_range:
       self.reset_agent_probabilties_when_we_know_the_true_position(i, list(gameState.getAgentState(i).getPosition()))
@@ -493,19 +512,10 @@ class DummyAgent(CaptureAgent):
 
     actions = gameState.getLegalActions(self.index)
 
-    score = self.getScore(gameState)
-    #print(score)
-    if score > 0:
-      self.offensive = False
-    if myState.isPacman:
-      self.offensive = True
-    # we toggle defensive vs offensive if we killed someone
-    # or if we are winning
-    # i.e. if we kill some1 we go offensive
-    # then if we are winning on the scoreboard we go defensive
-    decision_tree = DecisionTree(gameState, self, self.offensive)
+    decision_tree = DecisionTree(gameState, self)
     return decision_tree.get_action()
-    #updateNoisyDistanceProbabilities
+
+
   ###Utility functions###
 
   def find_place_in_grid(self, gameState, location):
@@ -515,14 +525,14 @@ class DummyAgent(CaptureAgent):
     location_to_work_with = list(location)
     if location not in self.grid_to_work_with:
       location_copy = location_to_work_with
-      for i in range(1, 8):
+      for i in range(1, 3):
         if self.red:
           location_copy[0] = location_copy[0] - i
         else:
           location_copy[0] = location_copy[0] + i
         if tuple(location_copy) in self.grid_to_work_with:
           return tuple(location_copy)
-      for i in range(1, 8):
+      for i in range(1, 4):
         location_copy[1] = location_copy[1] - i
         if tuple(location_copy) in self.grid_to_work_with:
           return tuple(location_copy)
@@ -576,8 +586,6 @@ class DummyAgent(CaptureAgent):
         list_of_possible_coordinates.append(candidate)
     return list_of_possible_coordinates
 
-  #-1,-1
-
   def update_enemy_possible_locations_depending_on_round(self, enemy_to_update, gameState):
     # all legal actions for the enemy depending on possible locations
     list_index = self.getEnemyListIndex(enemy_to_update)
@@ -613,6 +621,20 @@ class DummyAgent(CaptureAgent):
       list_of_probabilities[agent_list_index][starting_location_index][1] = 1.0
     return list_of_probabilities
 
+  def initialize_probability_list_for_a_enemy_if_all_odds_are_zero(self, enemy, gameState):
+      index = self.getEnemyListIndex(enemy)
+      listCopy = [i[1] for i in self.emission_probabilties_for_each_location_for_each_agent[index]]
+      if all(i <= 0 for i in listCopy):
+        initPos = list(gameState.getInitialAgentPosition(enemy))
+        initPos = [initPos, 0.0]
+        starting_location_index = self.emission_probabilties_for_each_location_for_each_agent[index].index(initPos)
+        print(starting_location_index)
+        self.emission_probabilties_for_each_location_for_each_agent[index][starting_location_index][1] = 1.0
+        #todo need to set all other odds to zero
+        for i in range(len(self.emission_probabilties_for_each_location_for_each_agent[index])):
+          if i != starting_location_index:
+            self.emission_probabilties_for_each_location_for_each_agent[index][i][1] = 0.0
+
   def reset_agent_probabilties_when_we_know_the_true_position(self, enemy, true_position):
       index = self.getEnemyListIndex(enemy)
       listCopy = [i[0] for i in self.emission_probabilties_for_each_location_for_each_agent[index]]
@@ -636,6 +658,8 @@ class DummyAgent(CaptureAgent):
       kill = True
       enemies_to_reset_locations_for = list(set(old_invaderList) - set(new_invaderList))
     return kill
+
+  #def check_initial_positon_odds(self, enemy):
 
   def check_if_a_pellet_was_eaten(self, gameState):
     food = self.getFoodYouAreDefending(gameState)
@@ -663,3 +687,4 @@ class DummyAgent(CaptureAgent):
         updated_probabilties_for_each_location = i[1] * location_probabilty
       self.emission_probabilties_for_each_location_for_each_agent[index][counter][1] = updated_probabilties_for_each_location
       counter += 1
+
