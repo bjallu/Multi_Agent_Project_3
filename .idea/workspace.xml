@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="efc67e93-e4c2-4bf4-962b-2ddf545d5cdf" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/projectTeam.py" afterPath="$PROJECT_DIR$/projectTeam.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/score" afterPath="$PROJECT_DIR$/score" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -49,8 +49,8 @@
       <file leaf-file-name="projectTeam.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/projectTeam.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="239">
-              <caret line="641" column="29" lean-forward="true" selection-start-line="641" selection-start-column="29" selection-end-line="641" selection-end-column="29" />
+            <state relative-caret-position="414">
+              <caret line="516" column="0" lean-forward="true" selection-start-line="516" selection-start-column="0" selection-end-line="516" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -685,8 +685,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/projectTeam.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="239">
-          <caret line="641" column="29" lean-forward="true" selection-start-line="641" selection-start-column="29" selection-end-line="641" selection-end-column="29" />
+        <state relative-caret-position="414">
+          <caret line="516" column="0" lean-forward="true" selection-start-line="516" selection-start-column="0" selection-end-line="516" selection-end-column="0" />
           <folding />
         </state>
       </provider>

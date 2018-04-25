@@ -501,13 +501,13 @@ class DummyAgent(CaptureAgent):
     for enemy in self.enemy_indexes:
       self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
 
-    #kill = self.check_if_we_killed_an_enemy(gameState)
-    #if kill:
+    kill = self.check_if_we_killed_an_enemy(gameState)
+    if kill:
       list_index_of_dead_enemies = []
-      #for i in range(len(old_list_of_pacmen)):
-        #if old_list_of_pacmen[i] == True and new_list_of_enemies_that_are_pacmen[i] == False:
-          #enemy_index = self.enemy_indexes[i]
-          #self.reset_agent_probabilties_when_we_know_the_true_position(enemy_index, list(gameState.getInitialAgentPosition(enemy_index)))
+      for i in range(len(old_list_of_pacmen)):
+        if old_list_of_pacmen[i] == True and new_list_of_enemies_that_are_pacmen[i] == False:
+          enemy_index = self.enemy_indexes[i]
+          self.reset_agent_probabilties_when_we_know_the_true_position(enemy_index, list(gameState.getInitialAgentPosition(enemy_index)))
 
     list_of_enemies_in_range = [i for i in self.enemy_indexes if gameState.getAgentState(i).getPosition() != None]
     for i in list_of_enemies_in_range:
