@@ -148,23 +148,21 @@ class DecisionTreeNode :
       if (self.node_state.data.agentStates[i].configuration != None):
         agent_positions.append(self.node_state.data.agentStates[i].configuration.pos)
       else:
-        #agent_positions.append(self.root_agent_object.get_most_likely_distance_from_noisy_reading(i))
         agent_positions.append(self.root_agent_object.get_most_likely_distance_from_noisy_reading(i))
+        #agent_positions.append((-1,-1))
 
     my_index = self.agent_that_moved_here
     team_mates_index = (self.agent_that_moved_here + 2) % 4
 
     state_value = self.evaluate_state_one_agent(agent_positions,my_index,enemy_team) + self.evaluate_state_one_agent(agent_positions,team_mates_index,enemy_team)
 
-    #maintain_distance_factor = self.get_maintain_distance_factor(agent_positions[my_index],agent_positions[team_mates_index])
-
-    capsules_eaten_factor = self.get_capsule_eat_factor(my_index)
+    enemy_is_scared_factor = self.enemy_is_scared_factor(my_index)
 
     enemy_food_carrying_factor = self.get_enemy_food_carried_factor(my_index)
 
     score_factor = self.get_score_factor()
 
-    state_value = state_value + score_factor + capsules_eaten_factor + enemy_food_carrying_factor
+    state_value = state_value + score_factor + enemy_is_scared_factor + enemy_food_carrying_factor
 
     if (enemy_team): #If not enemy team is moving, then child nodes should have positive state values
       state_value = - state_value
@@ -183,11 +181,20 @@ class DecisionTreeNode :
 
     kill_enemy_agent_factor = self.kill_enemy_agent_factor(agent_positions,agent_index)
 
-    state_value = distance_to_food_factor + return_with_food_factor + distance_to_enemy_ghosts_factor + kill_enemy_agent_factor#+ food_carried_factor
+    maintain_distance_factor = self.get_maintain_distance_factor(agent_positions,agent_index)
+
+    state_value = distance_to_food_factor + return_with_food_factor + distance_to_enemy_ghosts_factor + kill_enemy_agent_factor + maintain_distance_factor#+ food_carried_factor
 
    # deb = self.get_distance_to_enemy_ghosts_factor(agent_positions,agent_index)
 
     return state_value
+
+  def get_maintain_distance_factor(self,agent_positions,agent_index):
+    team_mates_index = (agent_index + 2) % 4
+
+    distance = self.get_distance_to_agent(agent_positions,agent_index,team_mates_index)[0]
+
+    return distance / 10000
 
   def get_distance_to_enemy_ghosts_factor(self,agent_positions,agent_index):
     #return 0
@@ -213,15 +220,16 @@ class DecisionTreeNode :
     if distance > 3:
       return 0
 
-    distance_to_enemy_ghosts_factor = (-1 / (distance + 0.1)) * 100
+    distance_to_enemy_ghosts_factor = (-1 / (distance + 0.1)) * 1000
 
     return distance_to_enemy_ghosts_factor
 
   def get_distance_to_agent(self,agent_positions,from_agent,to_agent):
-    # other teams initial positons
     if (agent_positions[from_agent] != (-1,-1) and agent_positions[to_agent] != (-1,-1)):
       return [CaptureAgent.getMazeDistance(self.root_agent_object, agent_positions[from_agent], agent_positions[to_agent]),False]
+
     distance_vec = self.node_state.getAgentDistances()
+
     return [distance_vec[to_agent],True]
 
   def is_ghost(self,agent_index):
@@ -262,7 +270,7 @@ class DecisionTreeNode :
 
     for i in range(0,food.width):
       for j in range(0,food.height):
-        if food.data[i][j] :#or our_capsule == (i,j):
+        if food.data[i][j] or our_capsule == (i,j):
           distance = CaptureAgent.getMazeDistance(self.root_agent_object, agent_position, (i,j))
           distances.append(distance)
 
@@ -272,7 +280,7 @@ class DecisionTreeNode :
     distance_to_food_factor = min(distances)
 
     distance_to_food_factor = 1 / (distance_to_food_factor + 0.1)
-    distance_to_food_factor = distance_to_food_factor * 1
+    distance_to_food_factor = distance_to_food_factor * 10
 
 
     return distance_to_food_factor
@@ -287,7 +295,7 @@ class DecisionTreeNode :
 
     food_carrying = self.node_state.data.agentStates[enemy_agent_index_1].numCarrying + self.node_state.data.agentStates[enemy_agent_index_2].numCarrying
 
-    return -1000 * food_carrying
+    return -10000 * food_carrying
 
   def kill_enemy_agent_factor(self,agent_positions,agent_index):
     [enemy_agent_index_1, enemy_agent_index_2] = self.get_enemy_indices(agent_index)
@@ -315,16 +323,16 @@ class DecisionTreeNode :
       #center_of_our_half_pos = (3 * self.node_state.data.layout.width/4,self.node_state.data.layout.height/2)
 
       if (agent_index < 2):
-        goal_agent = (3 * self.node_state.data.layout.width/4,self.node_state.data.layout.height/4)
+        goal_agent = (self.node_state.data.layout.width/2 + 2,self.node_state.data.layout.height/4)
       else:
-        goal_agent = (3 * self.node_state.data.layout.width / 4, 3 * self.node_state.data.layout.height / 4)
+        goal_agent = (self.node_state.data.layout.width/2 + 2, 3 * self.node_state.data.layout.height / 4)
     else:
       #center_of_our_half_pos = (self.node_state.data.layout.width / 4, self.node_state.data.layout.height / 2)
 
       if (agent_index < 2):
-        goal_agent = (self.node_state.data.layout.width / 4, self.node_state.data.layout.height / 4)
+        goal_agent = (self.node_state.data.layout.width/2 - 2, self.node_state.data.layout.height / 4)
       else:
-        goal_agent = (self.node_state.data.layout.width / 4, 3 * self.node_state.data.layout.height / 4)
+        goal_agent = (self.node_state.data.layout.width/2 - 2, 3 * self.node_state.data.layout.height / 4)
 
     goal_agent = self.get_closest_non_wall_position(goal_agent)
 
@@ -332,7 +340,7 @@ class DecisionTreeNode :
       distance_enemy = CaptureAgent.getMazeDistance(self.root_agent_object,agent_positions[agent_index],goal_agent)
 
     factor = food_enemy / (distance_enemy + 0.1)
-    factor = factor * 100
+    factor = factor * 300
 
     return factor
 
@@ -352,12 +360,17 @@ class DecisionTreeNode :
         if not self.node_state.data.layout.walls.data[position_cur[0]][position_cur[1]]:
           return position_cur
 
-  def get_capsule_eat_factor(self,agent_index):
-    team_mate_index = (agent_index + 2) % 4
+  def enemy_is_scared_factor(self,agent_index):
+    [enemy_agent_index_1, enemy_agent_index_2] = self.get_enemy_indices(agent_index)
 
-    #factor = self.node_state.data.agentStates[agent_index].
+    factor = 0
 
-    return 0
+    if self.node_state.data.agentStates[enemy_agent_index_1].scaredTimer > 0:
+      factor += 1000
+    if self.node_state.data.agentStates[enemy_agent_index_2].scaredTimer > 0:
+      factor += 1000
+
+    return factor
 
   def get_enemy_indices(self,agent_index):
     enemy_index_1 = (agent_index + 1) % 4
@@ -378,7 +391,9 @@ class DecisionTreeNode :
 
     distance_home = self.get_closest_distance_to_home(agent_position,agent_index)
 
-    return_with_food_factor = (1 / (distance_home + 0.1)) * food_carrying * 100
+    return_with_food_factor = (1 / (distance_home + 0.1)) * food_carrying * 10
+
+    return_with_food_factor += food_carrying * 100
 
     return return_with_food_factor
 
@@ -403,17 +418,7 @@ class DecisionTreeNode :
 
     return min(distances)
 
-  #def get_closest_chokepoint(self):
-  #    features['distanceToMiddle'] = self.getMazeDistance(myPos, self.middle)
-  # try features for the upper and lower half so the agent not in the middle could settle on either one of those points
-  #features['DistanceToUpperHalf'] = self.getMazeDistance(myPos, self.upperHalf)
-  #features['DistanceToLowerHalf'] = self.getMazeDistance(myPos, self.lowerHalf)
-  #    if both_defending:
- #     features['distanceFromEachOther'] = self.getMazeDistance(teamMembersPositions[0], teamMembersPositions[1])
- #   else:
-  #    features['distanceFromEachOther'] = 0
 
-  #def get_num_invaders(self,agent_position, agent_index):
 
 class DummyAgent(CaptureAgent):
   """
@@ -513,6 +518,9 @@ class DummyAgent(CaptureAgent):
     actions = gameState.getLegalActions(self.index)
 
     decision_tree = DecisionTree(gameState, self)
+
+    time.sleep(0.1)
+
     return decision_tree.get_action()
 
 
@@ -687,4 +695,3 @@ class DummyAgent(CaptureAgent):
         updated_probabilties_for_each_location = i[1] * location_probabilty
       self.emission_probabilties_for_each_location_for_each_agent[index][counter][1] = updated_probabilties_for_each_location
       counter += 1
-
