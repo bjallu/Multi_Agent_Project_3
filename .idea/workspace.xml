@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="efc67e93-e4c2-4bf4-962b-2ddf545d5cdf" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/projectTeam-bu.py" afterPath="$PROJECT_DIR$/projectTeam-bu.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/projectTeam.py" afterPath="$PROJECT_DIR$/projectTeam.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -75,14 +77,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="projectTeam.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="projectTeam.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/projectTeam.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="230">
-              <caret line="628" column="24" lean-forward="true" selection-start-line="628" selection-start-column="24" selection-end-line="628" selection-end-column="24" />
+            <state relative-caret-position="276">
+              <caret line="145" column="0" lean-forward="false" selection-start-line="145" selection-start-column="0" selection-end-line="149" selection-end-column="101" />
               <folding>
                 <element signature="e#649#687#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="projectTeam-bu.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/projectTeam-bu.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="285">
+              <caret line="224" column="0" lean-forward="true" selection-start-line="224" selection-start-column="0" selection-end-line="224" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -98,11 +110,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>CaptureAgent</find>
-      <find>gameState</find>
-      <find>grid</find>
-      <find>self.de</find>
-      <find>displayDistributionsOverPositions</find>
       <find>AgentState</find>
       <find>pre_bonus_training</find>
       <find>rules</find>
@@ -128,6 +135,11 @@
       <find>draw</find>
       <find>check_if_we_killed_an_enemy</find>
       <find>isPacman</find>
+      <find>check_i</find>
+      <find>getdistance</find>
+      <find>getAgentDistances</find>
+      <find>get_distance_to_agent</find>
+      <find>agent_positions</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -145,6 +157,7 @@
         <option value="$PROJECT_DIR$/../pacman-tournament-master/capture.py" />
         <option value="$PROJECT_DIR$/baselineTeam.py" />
         <option value="$PROJECT_DIR$/projectTeam.py" />
+        <option value="$PROJECT_DIR$/projectTeam-bu.py" />
       </list>
     </option>
   </component>
@@ -254,7 +267,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="pacman-tournament-master" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/capture.py" />
-      <option name="PARAMETERS" value="-r  projectTeam -b baselineTeam" />
+      <option name="PARAMETERS" value="-r  projectTeam-bu -b baselineTeam" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
     </configuration>
@@ -340,13 +353,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/myTeam.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/captureAgents.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -704,11 +710,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/projectTeam.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="628" column="24" lean-forward="true" selection-start-line="628" selection-start-column="24" selection-end-line="628" selection-end-column="24" />
+        <state relative-caret-position="276">
+          <caret line="145" column="0" lean-forward="false" selection-start-line="145" selection-start-column="0" selection-end-line="149" selection-end-column="101" />
           <folding>
             <element signature="e#649#687#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/projectTeam-bu.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="224" column="0" lean-forward="true" selection-start-line="224" selection-start-column="0" selection-end-line="224" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

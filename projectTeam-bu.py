@@ -149,7 +149,7 @@ class DecisionTreeNode :
         agent_positions.append(self.node_state.data.agentStates[i].configuration.pos)
       else:
         #agent_positions.append(self.root_agent_object.get_most_likely_distance_from_noisy_reading(i))
-        agent_positions.append((-1,-1))
+        agent_positions.append(self.root_agent_object.get_most_likely_distance_from_noisy_reading(i))
 
     my_index = self.agent_that_moved_here
     team_mates_index = (self.agent_that_moved_here + 2) % 4
@@ -220,9 +220,7 @@ class DecisionTreeNode :
   def get_distance_to_agent(self,agent_positions,from_agent,to_agent):
     if (agent_positions[from_agent] != (-1,-1) and agent_positions[to_agent] != (-1,-1)):
       return [CaptureAgent.getMazeDistance(self.root_agent_object, agent_positions[from_agent], agent_positions[to_agent]),False]
-
     distance_vec = self.node_state.getAgentDistances()
-
     return [distance_vec[to_agent],True]
 
   def is_ghost(self,agent_index):
@@ -472,33 +470,45 @@ class DummyAgent(CaptureAgent):
 
     self.grid_to_work_with = self.convert_tuples_to_list(self.grid_to_work_with)
     self.list_of_invaders = []
+    self.list_of_enemy_pacmen = []
     self.emission_probabilties_for_each_location_for_each_agent = self.initialize_probabilty_list(gameState)
 
   def chooseAction(self, gameState):
-    #First update enemy position
-    self.update_enemy_possible_locations_depending_on_round(self.enemy_to_update_possible_locations, gameState)
-    kill = self.check_if_we_killed_an_enemy(gameState)
-    list_of_enemies_in_range = [i for i in self.enemy_indexes if gameState.getAgentState(i).getPosition() != None]
-    for i in list_of_enemies_in_range:
-      self.reset_agent_probabilties_when_we_know_the_true_position(i, list(gameState.getAgentState(i).getPosition()))
-    #Get the position of the other agent at this gameState
-    #we could swiss to attack if we kill some1 and then return to defensive stance when we have returned some pellets
+    draw = []
+    for enemy in self.enemy_indexes:
+      draw.append(self.get_most_likely_distance_from_noisy_reading(enemy))
+      self.update_enemy_possible_locations_depending_on_round(enemy, gameState)
+    self.debugDraw(draw, [1, 1, 0], True)
+
+    old_list_of_pacmen = self.list_of_enemy_pacmen
+    new_list_of_enemies_that_are_pacmen = [gameState.getAgentState(enemy).isPacman for enemy in self.enemy_indexes]
+
     myState = gameState.getAgentState(self.index)
     myPos = myState.getPosition()
     otherDudePosition = self.get_other_agent_positon(myState, gameState)
-    #We could do this for all actions in the tree which would maybe give better results
+    # We could do this for all actions in the tree which would maybe give better results
     for enemy in self.enemy_indexes:
-      #Take both of our agents into account
       self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
-      if otherDudePosition != 0:
-        self.updateNoisyDistanceProbabilities(otherDudePosition, enemy, gameState)
+
+    kill = self.check_if_we_killed_an_enemy(gameState)
+    if kill:
+      list_index_of_dead_enemies = []
+      for i in range(len(old_list_of_pacmen)):
+        if old_list_of_pacmen[i] == True and new_list_of_enemies_that_are_pacmen[i] == False:
+          enemy_index = self.enemy_indexes[i]
+          self.reset_agent_probabilties_when_we_know_the_true_position(enemy_index, list(
+            gameState.getInitialAgentPosition(enemy_index)))
+    if kill:
+      self.offensive = True
+    list_of_enemies_in_range = [i for i in self.enemy_indexes if gameState.getAgentState(i).getPosition() != None]
+    for i in list_of_enemies_in_range:
+      self.reset_agent_probabilties_when_we_know_the_true_position(i, list(gameState.getAgentState(i).getPosition()))
+
+    self.list_of_enemy_pacmen = new_list_of_enemies_that_are_pacmen
 
     actions = gameState.getLegalActions(self.index)
 
     decision_tree = DecisionTree(gameState, self)
-
-    time.sleep(0.1)
-    
     return decision_tree.get_action()
 
 
@@ -584,7 +594,11 @@ class DummyAgent(CaptureAgent):
     for move in all_possible_moves:
       for i in self.emission_probabilties_for_each_location_for_each_agent[list_index]:
         if i[0] == move:
-          i[1] = 1/number_of_possible_locations_to_move_to
+          #normalize plus the old probabilty
+          i[1] = 1/number_of_possible_locations_to_move_to + i[1]
+
+    #now we get the previous probabilties and multiply and  maybe add normalize
+
 
   def initialize_probabilty_list(self, gameState):
     list_of_probabilities = []
@@ -621,24 +635,15 @@ class DummyAgent(CaptureAgent):
     new_invaderList = [e for e in enemies if e.isPacman]
     self.list_of_invaders = new_invaderList
     # we killed some one
+    enemies_to_reset_locations_for = []
     if len(new_invaderList) < len(old_invaderList):
-      # get that agent and reset his probabilty pos to the inital position
+      kill = True
       enemies_to_reset_locations_for = list(set(old_invaderList) - set(new_invaderList))
-      enemy_indexes = self.enemy_indexes
-      enemy_indexes_to_reset = []
-      if len(enemies_to_reset_locations_for) > 0:
-        for index in enemy_indexes:
-          index_to_store = index
-          state = gameState.getAgentState(index)
-          for lad in enemies_to_reset_locations_for:
-            if state == lad:
-              kill = True
-              enemy_indexes_to_reset.append(index_to_store)
-      for enemy in enemy_indexes_to_reset:
-        initPos = gameState.getInitialAgentPosition(enemy)
-        initPos = [initPos[0], initPos[1]]
-        self.reset_agent_probabilties_when_we_know_the_true_position(enemy, initPos)
-      return kill
+    return kill
+
+  def check_if_a_pellet_was_eaten(self, gameState):
+    food = self.getFoodYouAreDefending(gameState)
+    #print(food)
 
   def get_most_likely_distance_from_noisy_reading(self, enemy):
     index = self.getEnemyListIndex(enemy)
@@ -656,6 +661,10 @@ class DummyAgent(CaptureAgent):
       the_coordinates = tuple(i[0])
       distance = util.manhattanDistance(mypos, the_coordinates)
       location_probabilty = gameState.getDistanceProb(distance, distance_to_enemy)
-      updated_probabilties_for_each_location = i[1] * location_probabilty
+      if distance <= 5:
+        updated_probabilties_for_each_location = 0.
+      else:
+        updated_probabilties_for_each_location = i[1] * location_probabilty
       self.emission_probabilties_for_each_location_for_each_agent[index][counter][1] = updated_probabilties_for_each_location
       counter += 1
+

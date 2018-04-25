@@ -75,7 +75,7 @@ class DecisionTree :
     for i in range(len(future_states)):
       next_node = tree_node.add_child(future_states[i], agent_to_move)
 
-      self.add_children(next_node,level + 1)
+      self.add_children(next_node, level + 1)
 
 
   def get_action(self):
@@ -147,14 +147,12 @@ class DecisionTreeNode :
       if (self.node_state.data.agentStates[i].configuration != None):
         agent_positions.append(self.node_state.data.agentStates[i].configuration.pos)
       else:
-        #print(i)
         agent_positions.append(self.root_agent_object.get_most_likely_distance_from_noisy_reading(i))
 
     my_index = self.agent_that_moved_here
     team_mates_index = (self.agent_that_moved_here + 2) % 4
 
     if self.offensive:
-
       state_value = self.evaluate_state_one_agent(agent_positions, my_index,enemy_team) + self.evaluate_state_one_agent(agent_positions,team_mates_index,enemy_team)
       maintain_distance_factor = self.get_maintain_distance_factor(agent_positions[my_index],agent_positions[team_mates_index])
       enemies_are_scared_factor = self.get_enemies_are_scared_factor(my_index)
@@ -420,6 +418,9 @@ class DummyAgent(CaptureAgent):
     CaptureAgent.registerInitialState in captureAgents.py.
     '''
     CaptureAgent.registerInitialState(self, gameState)
+
+    #grid that contains our food location
+
     #Map without walls
     self.grid_to_work_with = []
     for x in range(gameState.data.layout.width):
@@ -461,6 +462,8 @@ class DummyAgent(CaptureAgent):
       draw.append(self.get_most_likely_distance_from_noisy_reading(enemy))
       self.update_enemy_possible_locations_depending_on_round(enemy, gameState)
     self.debugDraw(draw, [1, 1, 0], True)
+
+    self.check_if_a_pellet_was_eaten(gameState)
 
     old_list_of_pacmen = self.list_of_enemy_pacmen
     new_list_of_enemies_that_are_pacmen = [gameState.getAgentState(enemy).isPacman for enemy in self.enemy_indexes]
@@ -632,6 +635,10 @@ class DummyAgent(CaptureAgent):
       kill = True
       enemies_to_reset_locations_for = list(set(old_invaderList) - set(new_invaderList))
     return kill
+
+  def check_if_a_pellet_was_eaten(self, gameState):
+    food = self.getFoodYouAreDefending(gameState)
+    #print(food)
 
   def get_most_likely_distance_from_noisy_reading(self, enemy):
     index = self.getEnemyListIndex(enemy)
