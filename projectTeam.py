@@ -501,13 +501,13 @@ class DummyAgent(CaptureAgent):
     for enemy in self.enemy_indexes:
       self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
 
-    kill = self.check_if_we_killed_an_enemy(gameState)
-    if kill:
+    #kill = self.check_if_we_killed_an_enemy(gameState)
+    #if kill:
       list_index_of_dead_enemies = []
-      for i in range(len(old_list_of_pacmen)):
-        if old_list_of_pacmen[i] == True and new_list_of_enemies_that_are_pacmen[i] == False:
-          enemy_index = self.enemy_indexes[i]
-          self.reset_agent_probabilties_when_we_know_the_true_position(enemy_index, list(gameState.getInitialAgentPosition(enemy_index)))
+      #for i in range(len(old_list_of_pacmen)):
+        #if old_list_of_pacmen[i] == True and new_list_of_enemies_that_are_pacmen[i] == False:
+          #enemy_index = self.enemy_indexes[i]
+          #self.reset_agent_probabilties_when_we_know_the_true_position(enemy_index, list(gameState.getInitialAgentPosition(enemy_index)))
 
     list_of_enemies_in_range = [i for i in self.enemy_indexes if gameState.getAgentState(i).getPosition() != None]
     for i in list_of_enemies_in_range:
@@ -637,6 +637,18 @@ class DummyAgent(CaptureAgent):
         initPos = [initPos, 0.0]
         starting_location_index = self.emission_probabilties_for_each_location_for_each_agent[index].index(initPos)
         self.emission_probabilties_for_each_location_for_each_agent[index][starting_location_index][1] = 1.0
+      list_index = index
+      all_locations_not_with_zero_probabilty = [i for i in self.emission_probabilties_for_each_location_for_each_agent[list_index] if i[1] != 0]
+      all_possible_moves = []
+      for i in all_locations_not_with_zero_probabilty:
+        posible_moves_from_i = self.get_legal_actions_from_location(i[0])
+        all_possible_moves.extend(posible_moves_from_i)
+      number_of_possible_locations_to_move_to = len(all_possible_moves)
+      for move in all_possible_moves:
+        for i in self.emission_probabilties_for_each_location_for_each_agent[list_index]:
+          if i[0] == move:
+            # normalize plus the old probabilty
+            i[1] = 1 / number_of_possible_locations_to_move_to + i[1]
 
   def reset_agent_probabilties_when_we_know_the_true_position(self, enemy, true_position):
       index = self.getEnemyListIndex(enemy)
