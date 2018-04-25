@@ -483,8 +483,8 @@ class DummyAgent(CaptureAgent):
   def chooseAction(self, gameState):
     draw = []
     for enemy in self.enemy_indexes:
-      self.update_enemy_possible_locations_depending_on_round(enemy, gameState)
       self.initialize_probability_list_for_a_enemy_if_all_odds_are_zero(enemy, gameState)
+      self.update_enemy_possible_locations_depending_on_round(enemy, gameState)
       draw.append(self.get_most_likely_distance_from_noisy_reading(enemy))
     if(self.index>1):
       self.debugDraw(draw, [1, 1, 0], True)
@@ -636,12 +636,7 @@ class DummyAgent(CaptureAgent):
         initPos = list(gameState.getInitialAgentPosition(enemy))
         initPos = [initPos, 0.0]
         starting_location_index = self.emission_probabilties_for_each_location_for_each_agent[index].index(initPos)
-        print(starting_location_index)
         self.emission_probabilties_for_each_location_for_each_agent[index][starting_location_index][1] = 1.0
-        #todo need to set all other odds to zero
-        for i in range(len(self.emission_probabilties_for_each_location_for_each_agent[index])):
-          if i != starting_location_index:
-            self.emission_probabilties_for_each_location_for_each_agent[index][i][1] = 0.0
 
   def reset_agent_probabilties_when_we_know_the_true_position(self, enemy, true_position):
       index = self.getEnemyListIndex(enemy)
