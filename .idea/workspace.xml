@@ -30,7 +30,7 @@
         <entry file="file://$PROJECT_DIR$/../../Deep learning/Assignment_1_turn_in.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="299">
-              <caret line="16" column="19" lean-forward="true" selection-start-line="16" selection-start-column="19" selection-end-line="16" selection-end-column="19" />
+              <caret line="16" column="19" lean-forward="false" selection-start-line="16" selection-start-column="19" selection-end-line="16" selection-end-column="19" />
               <folding />
             </state>
           </provider>
@@ -40,7 +40,7 @@
         <entry file="file://$PROJECT_DIR$/captureAgents.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="23">
-              <caret line="262" column="9" lean-forward="true" selection-start-line="262" selection-start-column="9" selection-end-line="262" selection-end-column="9" />
+              <caret line="262" column="9" lean-forward="false" selection-start-line="262" selection-start-column="9" selection-end-line="262" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -49,8 +49,8 @@
       <file leaf-file-name="projectTeam.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/projectTeam.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="414">
-              <caret line="516" column="0" lean-forward="true" selection-start-line="516" selection-start-column="0" selection-end-line="516" selection-end-column="0" />
+            <state relative-caret-position="207">
+              <caret line="185" column="129" lean-forward="false" selection-start-line="185" selection-start-column="129" selection-end-line="185" selection-end-column="129" />
               <folding />
             </state>
           </provider>
@@ -60,7 +60,7 @@
         <entry file="file://$PROJECT_DIR$/capture.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="23">
-              <caret line="710" column="9" lean-forward="true" selection-start-line="710" selection-start-column="9" selection-end-line="710" selection-end-column="9" />
+              <caret line="710" column="9" lean-forward="false" selection-start-line="710" selection-start-column="9" selection-end-line="710" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -77,7 +77,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>getInitialAgentPosition</find>
       <find>emission_probabilties_for_each_location_for_each_agent</find>
       <find>convert_tuples_to_list</find>
       <find>initial</find>
@@ -107,6 +106,7 @@
       <find>self.enemy_index</find>
       <find>update_enemy_possible_locations_depending_on_round</find>
       <find>initialize_probability_list_for_a_enemy_if_all_odds_are_zero</find>
+      <find>kill_enemy_agent_factor</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -234,7 +234,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="pacman-tournament-master" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/capture.py" />
-      <option name="PARAMETERS" value="-r  projectTeam  -b baselineTeam -l RANDOM7" />
+      <option name="PARAMETERS" value="-r  projectTeam  -b  teams/group-11 -l RANDOM2" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
     </configuration>
@@ -272,8 +272,8 @@
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.12447917" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32343584" sideWeight="0.14947917" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32343584" sideWeight="0.85052085" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3202545" sideWeight="0.14947917" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3202545" sideWeight="0.85052085" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -654,7 +654,7 @@
     <entry file="file://$PROJECT_DIR$/../../Deep learning/Assignment_1_turn_in.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="299">
-          <caret line="16" column="19" lean-forward="true" selection-start-line="16" selection-start-column="19" selection-end-line="16" selection-end-column="19" />
+          <caret line="16" column="19" lean-forward="false" selection-start-line="16" selection-start-column="19" selection-end-line="16" selection-end-column="19" />
           <folding />
         </state>
       </provider>
@@ -662,7 +662,7 @@
     <entry file="file://$PROJECT_DIR$/capture.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="23">
-          <caret line="710" column="9" lean-forward="true" selection-start-line="710" selection-start-column="9" selection-end-line="710" selection-end-column="9" />
+          <caret line="710" column="9" lean-forward="false" selection-start-line="710" selection-start-column="9" selection-end-line="710" selection-end-column="9" />
           <folding />
         </state>
       </provider>
@@ -678,15 +678,15 @@
     <entry file="file://$PROJECT_DIR$/captureAgents.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="23">
-          <caret line="262" column="9" lean-forward="true" selection-start-line="262" selection-start-column="9" selection-end-line="262" selection-end-column="9" />
+          <caret line="262" column="9" lean-forward="false" selection-start-line="262" selection-start-column="9" selection-end-line="262" selection-end-column="9" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/projectTeam.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="516" column="0" lean-forward="true" selection-start-line="516" selection-start-column="0" selection-end-line="516" selection-end-column="0" />
+        <state relative-caret-position="207">
+          <caret line="185" column="129" lean-forward="false" selection-start-line="185" selection-start-column="129" selection-end-line="185" selection-end-column="129" />
           <folding />
         </state>
       </provider>

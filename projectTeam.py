@@ -183,7 +183,7 @@ class DecisionTreeNode :
 
     maintain_distance_factor = self.get_maintain_distance_factor(agent_positions,agent_index)
 
-    state_value = distance_to_food_factor + return_with_food_factor + distance_to_enemy_ghosts_factor + kill_enemy_agent_factor + maintain_distance_factor#+ food_carried_factor
+    state_value = distance_to_food_factor + return_with_food_factor + distance_to_enemy_ghosts_factor + kill_enemy_agent_factor #+ maintain_distance_factor#+ food_carried_factor
 
    # deb = self.get_distance_to_enemy_ghosts_factor(agent_positions,agent_index)
 
@@ -252,8 +252,8 @@ class DecisionTreeNode :
 
     distances = []
 
-    blue_capsule = (-1,-1)
-    red_capsule = (-1,-1)
+    blue_capsule = (-1, -1)
+    red_capsule = (-1, -1)
 
     for c in self.node_state.data.capsules:
       if c[0] > self.node_state.data.layout.width / 2:
@@ -501,6 +501,7 @@ class DummyAgent(CaptureAgent):
     for enemy in self.enemy_indexes:
       self.updateNoisyDistanceProbabilities(myPos, enemy, gameState)
 
+    '''
     kill = self.check_if_we_killed_an_enemy(gameState)
     if kill:
       list_index_of_dead_enemies = []
@@ -508,6 +509,7 @@ class DummyAgent(CaptureAgent):
         if old_list_of_pacmen[i] == True and new_list_of_enemies_that_are_pacmen[i] == False:
           enemy_index = self.enemy_indexes[i]
           self.reset_agent_probabilties_when_we_know_the_true_position(enemy_index, list(gameState.getInitialAgentPosition(enemy_index)))
+    '''
 
     list_of_enemies_in_range = [i for i in self.enemy_indexes if gameState.getAgentState(i).getPosition() != None]
     for i in list_of_enemies_in_range:
@@ -519,7 +521,7 @@ class DummyAgent(CaptureAgent):
 
     decision_tree = DecisionTree(gameState, self)
 
-    time.sleep(0.1)
+    #time.sleep(0.1)
 
     return decision_tree.get_action()
 
@@ -649,6 +651,23 @@ class DummyAgent(CaptureAgent):
           if i[0] == move:
             # normalize plus the old probabilty
             i[1] = 1 / number_of_possible_locations_to_move_to + i[1]
+      #normalise
+      self.normalise_odds(enemy)
+
+
+  def normalise_odds(self, enemy):
+    index = self.getEnemyListIndex(enemy)
+    all_locations_not_with_zero_probabilty = [i for i in self.emission_probabilties_for_each_location_for_each_agent[index] if i[1] != 0]
+    sum = 0
+    for i in all_locations_not_with_zero_probabilty:
+      sum += i[1]
+    #noramlised odds
+    counter = 0
+    for i in self.emission_probabilties_for_each_location_for_each_agent[index]:
+      if i[1] != 0:
+        norm_odds = i[1]/sum
+        self.emission_probabilties_for_each_location_for_each_agent[index][counter][1] = norm_odds
+      counter += 1
 
   def reset_agent_probabilties_when_we_know_the_true_position(self, enemy, true_position):
       index = self.getEnemyListIndex(enemy)
