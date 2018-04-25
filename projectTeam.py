@@ -623,36 +623,14 @@ class DummyAgent(CaptureAgent):
   def check_if_we_killed_an_enemy(self, gameState):
     kill = False
     enemies = [gameState.getAgentState(i) for i in self.getOpponents(gameState)]
-    #print(enemies)
     old_invaderList = self.list_of_invaders
-    #print(old_invaderList)
     new_invaderList = [e for e in enemies if e.isPacman]
-    #print(new_invaderList)
     self.list_of_invaders = new_invaderList
     # we killed some one
     enemies_to_reset_locations_for = []
     if len(new_invaderList) < len(old_invaderList):
       kill = True
       enemies_to_reset_locations_for = list(set(old_invaderList) - set(new_invaderList))
-    '''  
-      # get that agent and reset his probabilty pos to the inital position
-      print(enemies_to_reset_locations_for)
-      enemy_indexes = self.enemy_indexes
-      enemy_indexes_to_reset = []
-      if len(enemies_to_reset_locations_for) > 0:
-        for index in enemy_indexes:
-          index_to_store = index
-          state = gameState.getAgentState(index)
-          for lad in enemies_to_reset_locations_for:
-            if state == lad:
-              enemy_indexes_to_reset.append(index_to_store)
-      for enemy in enemy_indexes_to_reset:
-        print(enemy)
-        initPos = gameState.getInitialAgentPosition(enemy)
-        initPos = [initPos[0], initPos[1]]
-        print(initPos)
-        self.reset_agent_probabilties_when_we_know_the_true_position(enemy, initPos)
-        '''
     return kill
 
   def get_most_likely_distance_from_noisy_reading(self, enemy):
